@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Algoritmo — Fluxo Integrado</title>
+    <style>
+        :root{
+            --bg:#f7f8fa; --text:#212529; --muted:#6c757d; --line:#dee2e6;
+            --brand:#0d6efd; --ok:#28a745; --warn:#fd7e14; --danger:#dc3545; --info:#0dcaf0;
+        }
+        *{box-sizing:border-box}
+        body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+        .header{background:#fff;border-bottom:1px solid var(--line);padding:16px 0;position:sticky;top:0;z-index:10}
+        .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+        h1{margin:4px 0 2px;font-size:26px}
+        .subtitle{color:var(--muted);font-size:14px}
+        .grid{max-width:1100px;margin:24px auto;padding:0 20px;display:grid;grid-template-columns:2fr 1fr;gap:24px}
+        .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+        .section-title{font-weight:600;font-size:18px;padding-bottom:10px;border-bottom:2px solid var(--brand);margin-bottom:16px}
+        .progress{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+        .step{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+        .step .n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#e9ecef;color:#6c757d;font-weight:700}
+        .step.active .n{background:var(--brand);color:#fff}.step.done .n{background:var(--ok);color:#fff}
+        .q-title{font-weight:600;font-size:18px;margin-bottom:4px}
+        .q-desc{color:var(--muted);margin-bottom:8px}
+        .options{display:grid;gap:10px;margin-top:10px}
+        .opt{display:flex;gap:10px;padding:12px 14px;border:2px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;transition:.15s}
+        .opt:hover{border-color:var(--brand);background:#f4f8ff}
+        .opt.selected{border-color:var(--brand);background:#e7f1ff}
+        .btnbar{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+        .btn{border:0;border-radius:8px;padding:12px 16px;font-weight:600;cursor:pointer;font-size:15px}
+        .btn-primary{background:var(--brand);color:#fff}.btn-primary:hover{background:#0b5ed7}
+        .btn-ghost{background:#fff;color:var(--muted);border:2px solid var(--line)}.btn-ghost:hover{background:#f8f9fa}
+        .result-box{color:#fff;border-radius:10px;padding:18px;text-align:center;margin-bottom:12px}
+        .result-k{font-size:13px;letter-spacing:.5px;text-transform:uppercase}
+        .result-v{font-size:32px;font-weight:800;margin:6px 0}
+        .note{background:#e7f3ff;border-left:4px solid var(--brand);padding:12px;font-size:14px;border-radius:6px;color:#084298}
+        .badge{display:inline-block;padding:2px 8px;font-size:12px;border-radius:999px;border:1px solid rgba(0,0,0,.15);margin-left:6px}
+        #modalHelp{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);align-items:center;justify-content:center}
+        #modalHelp .box{background:#fff;border-radius:10px;max-width:680px;width:92%;padding:18px;border:1px solid var(--line)}
+        #helpContent ul{margin:8px 0 0 18px}
+        @media(max-width:900px){.grid{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="wrap">
+        <h1>Algoritmo — Decisão Clínica para Retirada de Cateter</h1>
+        <div class="subtitle">Algoritmo clínico para retirada de cateter venoso central de longa permanência em pacientes pós transplante alogênico de células-tronco hematopoieticas. <br>Versão baseada no <a href="algoritmo.pdf">fluxograma</a>.</div>
+    </div>
+</header>
+
+<main class="grid">
+    <section class="card">
+        <div id="progress" class="progress"></div>
+        <div id="stage"></div>
+        <div class="btnbar">
+            <button id="btnBack" class="btn btn-ghost" type="button">← Anterior</button>
+            <button id="btnReset" class="btn btn-ghost" type="button">Reiniciar</button>
+            <button id="btnNext" class="btn btn-primary" type="button">Próximo →</button>
+        </div>
+    </section>
+
+    <aside class="card">
+        <div class="section-title">Resultado</div>
+        <div id="result"><p class="note">Responda às perguntas para gerar a recomendação.</p></div>
+    </aside>
+</main>
+
+<!-- Modal de ajuda -->
+<div id="modalHelp">
+    <div class="box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <div class="section-title" style="border-bottom:0;margin:0">Critérios</div>
+            <button id="btnCloseHelp" class="btn btn-ghost">Fechar</button>
+        </div>
+        <div id="helpContent" class="muted"></div>
+    </div>
+</div>
+
+<script>
+    // ===== HELP BOXES (1*,2*,3*,4*) =====
+    const HELP = {
+        "1*": {
+            title: "1* Adesão às boas práticas de manutenção do cateter",
+            items: [
+                "Comparecer às consultas de manutenção e curativo a cada 7 dias.",
+                "Proteger o curativo e o cateter de sujidades.",
+                "Proteger o curativo e o cateter para não molhar.",
+                "Não realizar automanuseio do cateter e do curativo.",
+            ]
+        },
+        "2*": {
+            title: "2* Pacientes de alto risco para complicações pós-transplante",
+            items: [
+                "Frágil.",
+                "Alto índice de comorbidades (HCT-I).",
+                "TCTH com doença em atividade.",
+                "Doença com alto risco de recidiva.",
+                "Haploidêntico.",
+                "Proposta de realização de DLI.",
+                "Internação prolongada no TCTH.",
+                "Internação em UTI no TCTH.",
+                "SOS hepática no TCTH.",
+                "Infecção documentada no TCTH.",
+                "Necessitou de atendimento de emergência após alta."
+            ]
+        },
+        "3*": {
+            title: "3* Condições agudas",
+            items: [
+                "Sangramento moderado.",
+                "Cistite hemorrágica.",
+                "Hipovolemia.",
+                "Nível de consciência alterado.",
+                "Sinal vital alterado.",
+                "Disfunção orgânica.",
+                "Distúrbio eletrolítico.",
+                "Má nutrição.",
+                "Hipoalbuminemia.",
+                "Aumento expressivo de carga viral em dois exames consecutivos do painel viral para CMV.",
+                "Painel viral positivo para CMV a menos de 30 dias.",
+                "Sepse a menos de 30 dias.",
+                "Neutropenia.",
+                "Plaquetopenia.",
+                "Anemia",
+                "Efeito colateral com regime medicamentoso via oral."
+
+            ]
+        },
+        "4*": {
+            title: "4* Outras condições",
+            items: [
+                "Doença linfoproliferativa pós transplante (PTLD).",
+                "Falha de enxerto.",
+                "Segundo tumor maligno."
+            ]
+        }
+    };
+
+    // ===== FLOW (aderente ao PNG Parte 1) =====
+    const FLOW = {
+        start: "q_flogisticos",
+        nodes: {
+            // 0) Sinais flogísticos
+            q_flogisticos: {
+                type: "q", step: 1, meta: null,
+                title: "Cateter com sinais flogísticos?",
+                desc: "Dor, edema, calor — excluindo reação a corpo estranho e farmacodermia.",
+                options: [
+                    { value: "sim", label: "Sim", next: "r_retirar" },
+                    { value: "nao", label: "Não", next: "q_intervalo_7" }
+                ]
+            },
+            // 1) Intervalo > 7 dias
+            q_intervalo_7: {
+                type: "q", step: 2, meta: null,
+                title: "Intervalo entre consultas superior a 7 dias?",
+                desc: "",
+                options: [
+                    { value: "sim", label: "Sim", next: "q_comp_mecanica" },
+                    { value: "nao", label: "Não", next: "r_aguardar_intervalo" }
+                ]
+            },
+            // 1* adesão
+            q_adesao: {
+                type: "q", step: 3, meta: "1*",
+                title: "Adesão às boas práticas de manutenção do cateter?",
+                desc: "",
+                options: [
+                    { value: "sim", label: "Sim", next: "q_alto_risco" },
+                    { value: "nao", label: "Não", next: "r_reorientar_uma_vez" }
+                ]
+            },
+            // complicações mecânicas (ainda com possibilidade de uso)
+            q_comp_mecanica: {
+                type: "q", step: 4, meta: null,
+                title: "Cateter com complicações mecânicas, mas ainda com possibilidade de uso?",
+                desc: "",
+                options: [
+                    { value: "sim", label: "Sim", next: "q_adesao" },
+                    { value: "nao", label: "Não", next: "q_alto_risco" }
+                ]
+            },
+            // 2* alto risco
+            q_alto_risco: {
+                type: "q", step: 5, meta: "2*",
+                title: "Paciente de alto risco para complicações pós-transplante?",
+                desc: "",
+                options: [
+                    { value: "sim", label: "Sim", next: "q_d100" },
+                    { value: "nao", label: "Não", next: "q_agudas" }
+                ]
+            },
+            // D+100
+            q_d100: {
+                type: "q", step: 6, meta: null,
+                title: "≥ D+100?",
+                desc: "",
+                options: [
+                    { value: "sim", label: "Sim", next: "q_agudas" },
+                    { value: "nao", label: "Não", next: "r_aguardar_d100" }
+                ]
+            },
+            // 3* agudas
+            q_agudas: {
+                type: "q", step: 7, meta: "3*",
+                title: "Apresenta alguma das condições agudas?",
+                desc: "",
+                options: [
+                    { value: "sim", label: "Sim", next: "q_agudas_avaliar" },
+                    { value: "nao", label: "Não", next: "q_transfusao15" }
+                ]
+            },
+            q_reorientar_cuidados: {
+                type: "q", step: 8, meta: null,
+                title: "Reorientar cuidados uma vez.",
+                desc: "Selecione uma das opções.",
+                options: [
+                    { value: "prox_vez", label: "Próxima vez", next: "r_retirar_pos_reorientacao" },
+                    { value: "prim_vez", label: "Primeira vez.", next: "q_alto_risco" }
+                ]
+            },
+            q_agudas_avaliar: {
+                type: "q", step: 8, meta: null,
+                title: "Avaliar",
+                desc: "Selecione uma das opções.",
+                options: [
+                    { value: "vig_iv", label: "Necessita de vigilância clínica ou TTO IV", next: "r_aguardar_melhora_clinica" },
+                    { value: "tto_vo", label: "Controle clínico adequado e TTO VO", next: "q_transfusao15" }
+                ]
+            },
+            // infecção não relacionada
+            q_infeccao_nao_cateter: {
+                type: "q", step: 9, meta: null,
+                title: "Em curso de infecção não relacionada ao cateter?",
+                desc: "",
+                options: [
+                    { value: "sim", label: "Sim", next: "r_aguardar_trat_infeccioso" },
+                    { value: "nao", label: "Não", next: "q_dech_aguda" }
+                ]
+            },
+            // transfusão 15d
+            q_transfusao15: {
+                type: "q", step: 10, meta: null,
+                title: "Necessitou de transfusão de hemácias ou plaquetas nos últimos 15 dias?",
+                desc: "",
+                options: [
+                    { value: "sim", label: "Sim", next: "r_aguardar_15" },
+                    { value: "nao", label: "Não", next: "q_infeccao_nao_cateter" }
+                ]
+            },
+            // DECH aguda
+            q_dech_aguda: {
+                type: "q", step: 11, meta: null,
+                title: "Com DECH aguda?",
+                desc: "",
+                options: [
+                    { value: "sim", label: "Sim", next: "q_dech_aguda_grau" },
+                    { value: "nao", label: "Não", next: "q_dech_cronica" }
+                ]
+            },
+            q_dech_aguda_grau: {
+                type: "q", step: 12, meta: null,
+                title: "Grau da DECH aguda",
+                desc: "",
+                options: [
+                    { value: "III_IV", label: "Grau II, III ou IV", next: "r_vigilancia_ou_tto_iv" },
+                    { value: "I", label: "Grau I", next: "q_estavel_14" }
+                ]
+            },
+            q_estavel_14: {
+                type: "q", step: 13, meta: null,
+                title: "Estável há pelo menos 14 dias?",
+                desc: "",
+                options: [
+                    { value: "sim", label: "Sim", next: "q_outras_condicoes" },
+                    { value: "nao", label: "Não", next: "r_reavaliar_14_dias" }
+                ]
+            },
+            // DECH crônica
+            q_dech_cronica: {
+                type: "q", step: 14, meta: null,
+                title: "Com DECH crônica?",
+                desc: "",
+                options: [
+                    { value: "sim", label: "Sim", next: "q_dech_cronica_grau" },
+                    { value: "nao", label: "Não", next: "q_outras_condicoes" }
+                ]
+            },
+            q_dech_cronica_grau: {
+                type: "q", step: 15, meta: null,
+                title: "Grau da DECH crônica",
+                desc: "",
+                options: [
+                    { value: "leve", label: "Leve", next: "q_estavel_14" },
+                    { value: "mod_grave", label: "Moderada ou Grave", next: "r_reavaliar_para_dechc_leve" }
+                ]
+            },
+            // 4* Outras condições
+            q_outras_condicoes: {
+                type: "q", step: 16, meta: "4*",
+                title: "Apresenta alguma outra condição?",
+                desc: "",
+                options: [
+                    { value: "sim", label: "Sim", next: "q_acesso_dificil" },
+                    { value: "nao", label: "Não", next: "r_retirar" }
+                ]
+            },
+            q_acesso_dificil: {
+                type: "q", step: 17, meta: null,
+                title: "Acesso venoso periférico difícil?",
+                desc: "",
+                options: [
+                    { value: "sim", label: "Sim", next: "r_manter" },
+                    { value: "nao", label: "Não", next: "r_retirar" }
+                ]
+            },
+
+            // ===== Resultados =====
+            r_reorientar_uma_vez: {
+                type: "q",
+                step: 8,
+                meta: null,
+                // texto da PERGUNTA
+                title: "É a primeira vez que acontece a reorientação?",
+                desc: "",
+                // banner que será exibido na área de Resultado
+                banner: {
+                    label: "Reorientar cuidados uma vez.",
+                    color: "#6f42c1",
+                    details: ""
+                },
+                options: [
+                    { value: "sim", label: "Sim", next: "q_alto_risco" },
+                    { value: "nao", label: "Não", next: "r_retirar_pos_reorientacao" }
+                ]
+            },
+            r_aguardar_intervalo: { type:"result", label:"Reavaliar na próxima consulta / Aguardar tempo entre consultas ser superior a 7 dias", color:"#fd7e14",
+                details:"" },
+            r_aguardar_d100: { type:"result", label:"Reavaliar na próxima consulta / Aguardar preferencialmente até D+100", color:"#fd7e14",
+                details:"" },
+            r_vigilancia_ou_tto_iv: { type:"result", label:"Reavaliar na próxima consulta / Aguardar melhora para DECHa < II", color:"#0dcaf0",
+                details:"" },
+            r_aguardar_melhora_clinica: { type:"result", label:"Reavaliar na próxima consulta / Aguardar melhora clínica ou laboratorial", color:"#0dcaf0",
+                details:"" },
+            r_reavaliar_melhora: { type:"result", label:"Reavaliar próxima consulta / Aguardar melhora do quadro", color:"#17a2b8",
+                details:"" },
+            r_aguardar_trat_infeccioso: { type:"result", label:"Reavaliar na próxima consulta / Aguardar término do tratamento infeccioso", color:"#ffc107",
+                details:"" },
+            r_aguardar_15: { type:"result", label:"Reavaliar na próxima consulta / Aguardar um intervalo de 15 dias após a última transfusão", color:"#fd7e14",
+                details:"" },
+            r_reavaliar_14_dias: { type:"result", label:"Reavaliar na próxima consulta / Esperar DECH estar estável há pelo menos 14 dias", color:"#fd7e14",
+                details:"" },
+            r_reavaliar_dechc_leve: { type:"result", label:"Reavaliar / Aguardar DECH crônica leve", color:"#17a2b8",
+                details:"" },
+            r_reavaliar_para_dechc_leve: { type:"result", label:"Reavaliar na próxima consulta / Aguardar melhora para DECHc leve", color:"#fd7e14",
+                details:"" },
+            r_manter: { type:"result", label:"Manter cateter para tratamento proposto", color:"#28a745",
+                details:"M" },
+            r_retirar: { type:"result", label:"Retirar cateter", color:"#dc3545",
+                details:"" },
+            r_retirar_pos_reorientacao: { type:"result", label:"Retirar cateter", color:"#dc3545",
+                details:"Não aderiu às boas práticas." }
+        }
+    };
+
+    // ===== RENDER/CONTROLS =====
+    const stageEl = document.getElementById('stage');
+    const resultEl = document.getElementById('result');
+    const progressEl = document.getElementById('progress');
+    const debugEl = document.getElementById('debug');
+    const btnBack = document.getElementById('btnBack');
+    const btnReset = document.getElementById('btnReset');
+    const btnNext = document.getElementById('btnNext');
+
+    let current = FLOW.start;
+    let answers = {};
+    let path = [];
+
+    function renderProgress(){
+        const qNodes = Object.values(FLOW.nodes).filter(n=>n.type==='q');
+        const maxStep = Math.max(...qNodes.map(n=>n.step||1));
+        const node = FLOW.nodes[current];
+        const activeStep = node.type==='q' ? (node.step||1) : maxStep;
+        let html='';
+        for(let i=1;i<=maxStep;i++){
+            const cls = i<activeStep ? 'step done' : (i===activeStep?'step active':'step');
+            html += `<div class="${cls}"><div class="n">${i}</div><span>Passo ${i}</span></div>`;
+        }
+        progressEl.innerHTML = html;
+    }
+
+    function openHelp(meta){
+        const box = HELP[meta];
+        if(!box){ return; }
+        const el = document.getElementById('helpContent');
+        el.innerHTML = `<div style="font-weight:600">${box.title}</div>` +
+            `<ul>${box.items.map(i=>`<li>${i}</li>`).join('')}</ul>`;
+        document.getElementById('modalHelp').style.display = 'flex';
+    }
+
+    document.getElementById('btnCloseHelp').addEventListener('click',()=>{
+        document.getElementById('modalHelp').style.display='none';
+    });
+    document.getElementById('modalHelp').addEventListener('click',(e)=>{
+        if(e.target.id==='modalHelp') document.getElementById('modalHelp').style.display='none';
+    });
+
+    function renderQuestion(node){
+        const saved = answers[current];
+        const opts = node.options.map((opt, idx)=>{
+            const checked = saved===opt.value;
+            return `<label class="opt ${checked?'selected':''}" data-value="${opt.value}">
+      <input type="radio" name="q" value="${opt.value}" ${checked?'checked':''} />
+      <span>${opt.label}</span>
+    </label>`;
+        }).join('');
+        const helpBtn = node.meta && HELP[node.meta] ?
+            `<button id="btnHelp" class="btn btn-ghost" type="button">Ver critérios ${node.meta}</button>` : '';
+
+        stageEl.innerHTML = `<div class="q">
+    <div class="q-title">${node.title}${node.meta?` <span class="badge">${node.meta}</span>`:''}</div>
+    <div class="q-desc">${node.desc||''}</div>
+    ${helpBtn}
+    <div class="options">${opts}</div>
+  </div>`;
+
+        // se a pergunta tiver um banner, atualiza a área de Resultado
+        if (node.banner) {
+            resultEl.innerHTML = `<div class="result-box" style="background:${node.banner.color}">
+      <div class="result-k">Recomendação</div>
+      <div class="result-v">${node.banner.label}</div>
+      <div class="badge">Algoritmo</div>
+    </div>
+    <div class="note">${node.banner.details || 'Este resultado é baseado nas respostas fornecidas.'}</div>`;
+        }
+
+
+        stageEl.querySelectorAll('.opt').forEach(el=>{
+            el.addEventListener('click',()=>{
+                stageEl.querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
+                el.classList.add('selected');
+                answers[current] = el.getAttribute('data-value');
+                updateDebug();
+            });
+        });
+        const hb = document.getElementById('btnHelp');
+        if(hb){ hb.addEventListener('click', ()=> openHelp(node.meta)); }
+
+        btnNext.style.display='inline-flex';
+        btnBack.disabled = path.length===0;
+    }
+
+    function renderResult(node){
+        stageEl.innerHTML = `<div class="section-title">Análise</div><div class="note">${node.details}</div>`;
+        resultEl.innerHTML = `<div class="result-box" style="background:${node.color}">
+    <div class="result-k">Recomendação</div>
+    <div class="result-v">${node.label}</div>
+    <div class="badge">Algoritmo</div>
+  </div>
+  <div class="note">Este resultado é baseado nas respostas fornecidas.</div>`;
+        btnNext.style.display='none';
+        btnBack.disabled = path.length===0;
+    }
+
+    function render(){
+        renderProgress();
+        const node = FLOW.nodes[current];
+        if(!node){ stageEl.innerHTML = '<div class="note">Nó inválido. Reinicie.</div>'; return; }
+        if(node.type==='q') renderQuestion(node); else renderResult(node);
+        updateDebug();
+    }
+
+    function next(){
+        const node = FLOW.nodes[current];
+        if(node.type!=='q') return;
+        const v = answers[current];
+        if(!v){ alert('Selecione uma opção.'); return; }
+        const opt = node.options.find(o=>o.value===v);
+        if(!opt){ alert('Opção inválida.'); return; }
+        path.push(current);
+        current = opt.next;
+
+        // limpa o banner ao sair de r_reorientar_uma_vez
+        if (node.banner) {
+            resultEl.innerHTML = '<p class="note">Responda às perguntas para gerar a recomendação.</p>';
+        }
+
+        render();
+    }
+
+    function back(){
+        if (path.length === 0) return;
+        current = path.pop();
+        resultEl.innerHTML = '<p class="note">Responda às perguntas para gerar a recomendação.</p>';
+
+        render();
+    }
+
+    function resetAll(){
+        current = FLOW.start; answers = {}; path = [];
+        resultEl.innerHTML = '<p class="note">Responda às perguntas para gerar a recomendação.</p>';
+        render();
+    }
+
+    function updateDebug(){
+        if(debugEl.style.display==='none') return;
+        const n = FLOW.nodes[current];
+        debugEl.textContent = JSON.stringify({current, type:n.type, step:n.step||null, answer:answers[current]||null, path}, null, 2);
+    }
+
+    btnNext.addEventListener('click', next);
+    btnBack.addEventListener('click', back);
+    btnReset.addEventListener('click', resetAll);
+
+    // init
+    render();
+</script>
+</body>
+</html>
