@@ -28,10 +28,28 @@
         .opt{display:flex;gap:10px;padding:12px 14px;border:2px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;transition:.15s}
         .opt:hover{border-color:var(--brand);background:#f4f8ff}
         .opt.selected{border-color:var(--brand);background:#e7f1ff}
-        .btnbar{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
-        .btn{border:0;border-radius:8px;padding:12px 16px;font-weight:600;cursor:pointer;font-size:15px}
+        .btnbar{
+            display:flex;
+            gap:10px;
+            margin-top:18px;
+            align-items:center;
+        }
+
+        #btnReset{
+            margin-right:auto;
+        }        .btn{border:0;border-radius:8px;padding:12px 16px;font-weight:600;cursor:pointer;font-size:15px}
         .btn-primary{background:var(--brand);color:#fff}.btn-primary:hover{background:#0b5ed7}
         .btn-ghost{background:#fff;color:var(--muted);border:2px solid var(--line)}.btn-ghost:hover{background:#f8f9fa}
+        .btn-reset{
+            padding: 6px 10px;
+            font-size: 12px;
+            border-color: #d6d8db;
+            color: #6c757d;
+            background: #f8f9fa;
+        }
+        .btn-reset:hover{
+            background:#eef1f4;
+        }
         .result-box{color:#fff;border-radius:10px;padding:18px;text-align:center;margin-bottom:12px}
         .result-k{font-size:13px;letter-spacing:.5px;text-transform:uppercase}
         .result-v{font-size:32px;font-weight:800;margin:6px 0}
@@ -50,7 +68,7 @@
         <div class="subtitle">
             Algoritmo clínico para retirada de cateter venoso central de longa permanência em pacientes pós-transplante alogênico de células-tronco hematopoieticas.
             <br>
-            Desenvolvido no âmbito do Programa de <a href="https://www.ppgcm.medicina.ufrj.br">Pós-Graduação em Clínica Médica (PPGCM/UFRJ)</a>.
+            Desenvolvido no âmbito do Programa de Pós-Graduação em Clínica Médica (PPGCM/UFRJ).
             <br>
             Versão baseada no <a href="algoritmo.pdf">fluxograma</a>.
         </div>
@@ -62,8 +80,8 @@
         <div id="progress" class="progress"></div>
         <div id="stage"></div>
         <div class="btnbar">
+            <button id="btnReset" class="btn btn-ghost btn-reset" type="button">Reiniciar</button>
             <button id="btnBack" class="btn btn-ghost" type="button">← Anterior</button>
-            <button id="btnReset" class="btn btn-ghost" type="button">Reiniciar</button>
             <button id="btnNext" class="btn btn-primary" type="button">Próximo →</button>
         </div>
     </section>
@@ -281,7 +299,7 @@
                 title: "Estável há pelo menos 14 dias?",
                 desc: "",
                 options: [
-                    { value: "sim", label: "Sim", next: "q_outras_condicoes" },
+                    { value: "sim", label: "Sim", next: "q_dech_cronica" },
                     { value: "nao", label: "Não", next: "r_reavaliar_14_dias" }
                 ]
             },
@@ -482,14 +500,40 @@
     function next(){
         const node = FLOW.nodes[current];
         if(node.type!=='q') return;
+
         const v = answers[current];
         if(!v){ alert('Selecione uma opção.'); return; }
+
+        // ===== Regra especial: Passo 13 (q_estavel_14) =====
+        // Se veio do 12 (q_dech_aguda_grau) e respondeu "sim" -> vai para o 14 (q_dech_cronica)
+        // Se veio do 15 (q_dech_cronica_grau) e respondeu "sim" -> vai para o 16 (q_outras_condicoes)
+        if (current === "q_estavel_14" && v === "sim") {
+            const prev = path[path.length - 1];
+            path.push(current);
+
+            if (prev === "q_dech_aguda_grau") {
+                current = "q_dech_cronica";     // Passo 14
+            } else if (prev === "q_dech_cronica_grau") {
+                current = "q_outras_condicoes"; // Passo 16
+            } else {
+                current = "q_dech_cronica";
+            }
+
+            if (node.banner) {
+                resultEl.innerHTML = '<p class="note">Responda às perguntas para gerar a recomendação.</p>';
+            }
+
+            render();
+            return;
+        }
+
+        // ===== Fluxo padrão =====
         const opt = node.options.find(o=>o.value===v);
         if(!opt){ alert('Opção inválida.'); return; }
+
         path.push(current);
         current = opt.next;
 
-        // limpa o banner ao sair de r_reorientar_uma_vez
         if (node.banner) {
             resultEl.innerHTML = '<p class="note">Responda às perguntas para gerar a recomendação.</p>';
         }
