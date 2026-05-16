@@ -113,6 +113,7 @@
                 "Proteger o curativo e o cateter de sujidades.",
                 "Proteger o curativo e o cateter para não molhar.",
                 "Não realizar automanuseio do cateter e do curativo.",
+                "Retorna à consulta com curativo íntegro."
             ]
         },
         "2*": {
@@ -170,8 +171,8 @@
             // 0) Sinais flogísticos
             q_flogisticos: {
                 type: "q", step: 1, meta: null,
-                title: "Cateter com sinais flogísticos?",
-                desc: "Dor, edema, calor — excluindo reação a corpo estranho e farmacodermia.",
+                title: "Paciente com suspeita de infecção relacionada ao cateter?",
+                desc: "Sinais flogísticos, febre persistente ou sinais clínicos de infecção com causa provável o CVC e excluindo reação a corpo estranho ou farmacodermia.",
                 options: [
                     { value: "sim", label: "Sim", next: "r_retirar" },
                     { value: "nao", label: "Não", next: "q_intervalo_7" }
@@ -180,7 +181,7 @@
             // 1) Intervalo > 7 dias
             q_intervalo_7: {
                 type: "q", step: 2, meta: null,
-                title: "Intervalo entre consultas superior a 7 dias?",
+                title: "Intervalo entre as consultas é superior a 7 dias?",
                 desc: "",
                 options: [
                     { value: "sim", label: "Sim", next: "q_comp_mecanica" },
@@ -190,7 +191,7 @@
             // 1* adesão
             q_adesao: {
                 type: "q", step: 3, meta: "1*",
-                title: "Adesão às boas práticas de manutenção do cateter?",
+                title: "Paciente e cuidados com adesão às boas práticas de manutenção do cateter?",
                 desc: "",
                 options: [
                     { value: "sim", label: "Sim", next: "q_alto_risco" },
@@ -220,7 +221,7 @@
             // D+100
             q_d100: {
                 type: "q", step: 6, meta: null,
-                title: "≥ D+100?",
+                title: "Tempo de transplante igual ou superior a D+100?",
                 desc: "",
                 options: [
                     { value: "sim", label: "Sim", next: "q_agudas" },
@@ -234,7 +235,7 @@
                 desc: "",
                 options: [
                     { value: "sim", label: "Sim", next: "q_agudas_avaliar" },
-                    { value: "nao", label: "Não", next: "q_transfusao15" }
+                    { value: "nao", label: "Não", next: "q_infeccao_nao_cateter" }
                 ]
             },
             q_reorientar_cuidados: {
@@ -251,8 +252,8 @@
                 title: "Avaliar",
                 desc: "Selecione uma das opções.",
                 options: [
-                    { value: "vig_iv", label: "Necessita de vigilância clínica ou TTO IV", next: "r_aguardar_melhora_clinica" },
-                    { value: "tto_vo", label: "Controle clínico adequado e TTO VO", next: "q_transfusao15" }
+                    { value: "vig_iv", label: "Necessita de vigilância clínica ou tratamento intravenoso", next: "r_aguardar_melhora_clinica" },
+                    { value: "tto_vo", label: "Apresenta controle clínico adequado e tratamento é apenas por via oral", next: "q_infeccao_nao_cateter" }
                 ]
             },
             // infecção não relacionada
@@ -265,19 +266,9 @@
                     { value: "nao", label: "Não", next: "q_dech_aguda" }
                 ]
             },
-            // transfusão 15d
-            q_transfusao15: {
-                type: "q", step: 10, meta: null,
-                title: "Necessitou de transfusão de hemácias ou plaquetas nos últimos 15 dias?",
-                desc: "",
-                options: [
-                    { value: "sim", label: "Sim", next: "r_aguardar_15" },
-                    { value: "nao", label: "Não", next: "q_infeccao_nao_cateter" }
-                ]
-            },
             // DECH aguda
             q_dech_aguda: {
-                type: "q", step: 11, meta: null,
+                type: "q", step: 10, meta: null,
                 title: "Com DECH aguda?",
                 desc: "",
                 options: [
@@ -286,7 +277,7 @@
                 ]
             },
             q_dech_aguda_grau: {
-                type: "q", step: 12, meta: null,
+                type: "q", step: 11, meta: null,
                 title: "Grau da DECH aguda",
                 desc: "",
                 options: [
@@ -295,7 +286,7 @@
                 ]
             },
             q_estavel_14: {
-                type: "q", step: 13, meta: null,
+                type: "q", step: 12, meta: null,
                 title: "Estável há pelo menos 14 dias?",
                 desc: "",
                 options: [
@@ -305,7 +296,7 @@
             },
             // DECH crônica
             q_dech_cronica: {
-                type: "q", step: 14, meta: null,
+                type: "q", step: 13, meta: null,
                 title: "Com DECH crônica?",
                 desc: "",
                 options: [
@@ -314,7 +305,7 @@
                 ]
             },
             q_dech_cronica_grau: {
-                type: "q", step: 15, meta: null,
+                type: "q", step: 14, meta: null,
                 title: "Grau da DECH crônica",
                 desc: "",
                 options: [
@@ -324,7 +315,7 @@
             },
             // 4* Outras condições
             q_outras_condicoes: {
-                type: "q", step: 16, meta: "4*",
+                type: "q", step: 15, meta: "4*",
                 title: "Apresenta alguma outra condição?",
                 desc: "",
                 options: [
@@ -333,7 +324,7 @@
                 ]
             },
             q_acesso_dificil: {
-                type: "q", step: 17, meta: null,
+                type: "q", step: 16, meta: null,
                 title: "Acesso venoso periférico difícil?",
                 desc: "",
                 options: [
@@ -361,19 +352,17 @@
                     { value: "nao", label: "Não", next: "r_retirar_pos_reorientacao" }
                 ]
             },
-            r_aguardar_intervalo: { type:"result", label:"Reavaliar na próxima consulta / Aguardar tempo entre consultas ser superior a 7 dias", color:"#fd7e14",
+            r_aguardar_intervalo: { type:"result", label:"Reavaliar na próxima consulta/Aguardar intervalo entre consultas ser superior a 7 dias", color:"#fd7e14",
                 details:"" },
             r_aguardar_d100: { type:"result", label:"Reavaliar na próxima consulta / Aguardar preferencialmente até D+100", color:"#fd7e14",
                 details:"" },
-            r_vigilancia_ou_tto_iv: { type:"result", label:"Reavaliar na próxima consulta / Aguardar melhora para DECHa < II", color:"#0dcaf0",
+            r_vigilancia_ou_tto_iv: { type:"result", label:"Reavaliar na próxima consulta / Aguardar melhora para DECHa I", color:"#0dcaf0",
                 details:"" },
             r_aguardar_melhora_clinica: { type:"result", label:"Reavaliar na próxima consulta / Aguardar melhora clínica ou laboratorial", color:"#0dcaf0",
                 details:"" },
             r_reavaliar_melhora: { type:"result", label:"Reavaliar próxima consulta / Aguardar melhora do quadro", color:"#17a2b8",
                 details:"" },
             r_aguardar_trat_infeccioso: { type:"result", label:"Reavaliar na próxima consulta / Aguardar término do tratamento infeccioso", color:"#ffc107",
-                details:"" },
-            r_aguardar_15: { type:"result", label:"Reavaliar na próxima consulta / Aguardar um intervalo de 15 dias após a última transfusão", color:"#fd7e14",
                 details:"" },
             r_reavaliar_14_dias: { type:"result", label:"Reavaliar na próxima consulta / Esperar DECH estar estável há pelo menos 14 dias", color:"#fd7e14",
                 details:"" },
@@ -504,17 +493,17 @@
         const v = answers[current];
         if(!v){ alert('Selecione uma opção.'); return; }
 
-        // ===== Regra especial: Passo 13 (q_estavel_14) =====
-        // Se veio do 12 (q_dech_aguda_grau) e respondeu "sim" -> vai para o 14 (q_dech_cronica)
-        // Se veio do 15 (q_dech_cronica_grau) e respondeu "sim" -> vai para o 16 (q_outras_condicoes)
+        // ===== Regra especial: Passo 12 (q_estavel_14) =====
+        // Se veio do 11 (q_dech_aguda_grau) e respondeu "sim" -> vai para o 13 (q_dech_cronica)
+        // Se veio do 14 (q_dech_cronica_grau) e respondeu "sim" -> vai para o 15 (q_outras_condicoes)
         if (current === "q_estavel_14" && v === "sim") {
             const prev = path[path.length - 1];
             path.push(current);
 
             if (prev === "q_dech_aguda_grau") {
-                current = "q_dech_cronica";     // Passo 14
+                current = "q_dech_cronica";     // Passo 13
             } else if (prev === "q_dech_cronica_grau") {
-                current = "q_outras_condicoes"; // Passo 16
+                current = "q_outras_condicoes"; // Passo 15
             } else {
                 current = "q_dech_cronica";
             }
