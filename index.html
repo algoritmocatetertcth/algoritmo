@@ -106,8 +106,15 @@
 <script>
     // ===== HELP BOXES (1*,2*,3*,4*) =====
     const HELP = {
+        flogisticos: {
+            title: "Suspeita de infecção relacionada ao cateter",
+            items: [
+                "Sinais flogísticos, após exclusão de reação a corpo estranho ou farmacodermia.",
+                "Sinais clínicos de infecção ou febre persistente com provável relação com o CVC."
+            ]
+        },
         "1*": {
-            title: "1* Adesão às boas práticas de manutenção do cateter",
+            title: "Adesão às boas práticas de manutenção do cateter",
             items: [
                 "Comparecer às consultas de manutenção e curativo a cada 7 dias.",
                 "Proteger o curativo e o cateter de sujidades.",
@@ -117,7 +124,7 @@
             ]
         },
         "2*": {
-            title: "2* Pacientes de alto risco para complicações pós-transplante",
+            title: "Pacientes de alto risco para complicações pós-transplante",
             items: [
                 "Frágil.",
                 "Alto índice de comorbidades (HCT-I).",
@@ -133,7 +140,7 @@
             ]
         },
         "3*": {
-            title: "3* Condições agudas",
+            title: "Condições agudas",
             items: [
                 "Sangramento moderado.",
                 "Cistite hemorrágica.",
@@ -155,7 +162,7 @@
             ]
         },
         "4*": {
-            title: "4* Outras condições",
+            title: "Outras condições",
             items: [
                 "Doença linfoproliferativa pós transplante (PTLD).",
                 "Falha de enxerto.",
@@ -170,9 +177,9 @@
         nodes: {
             // 0) Sinais flogísticos
             q_flogisticos: {
-                type: "q", step: 1, meta: null,
+                type: "q", step: 1, meta: "flogisticos",
                 title: "Paciente com suspeita de infecção relacionada ao cateter?",
-                desc: "Sinais flogísticos, febre persistente ou sinais clínicos de infecção com causa provável o CVC e excluindo reação a corpo estranho ou farmacodermia.",
+                desc: "",
                 options: [
                     { value: "sim", label: "Sim", next: "r_retirar" },
                     { value: "nao", label: "Não", next: "q_intervalo_7" }
@@ -371,7 +378,7 @@
             r_reavaliar_para_dechc_leve: { type:"result", label:"Reavaliar na próxima consulta / Aguardar melhora para DECHc leve", color:"#fd7e14",
                 details:"" },
             r_manter: { type:"result", label:"Manter cateter para tratamento proposto", color:"#28a745",
-                details:"M" },
+                details:"" },
             r_retirar: { type:"result", label:"Retirar cateter", color:"#dc3545",
                 details:"" },
             r_retirar_pos_reorientacao: { type:"result", label:"Retirar cateter", color:"#dc3545",
@@ -390,7 +397,12 @@
 
     let current = FLOW.start;
     let answers = {};
+    let criteriaAnswers = {};
     let path = [];
+
+    function isCriteriaQuestion(node){
+        return ["2*", "3*", "4*"].includes(node.meta);
+    }
 
     function renderProgress(){
         const qNodes = Object.values(FLOW.nodes).filter(n=>n.type==='q');
@@ -423,18 +435,39 @@
 
     function renderQuestion(node){
         const saved = answers[current];
-        const opts = node.options.map((opt, idx)=>{
-            const checked = saved===opt.value;
-            return `<label class="opt ${checked?'selected':''}" data-value="${opt.value}">
+        let opts = '';
+
+        if(isCriteriaQuestion(node)){
+            const selected = criteriaAnswers[current] || [];
+            const criteria = HELP[node.meta].items.map((item, idx)=>{
+                const value = `criterio_${idx}`;
+                const checked = selected.includes(value);
+                return `<label class="opt ${checked?'selected':''}" data-value="${value}">
+      <input type="checkbox" name="q" value="${value}" ${checked?'checked':''} />
+      <span>${item}</span>
+    </label>`;
+            }).join('');
+            const noneChecked = saved === "nao";
+            opts = `${criteria}
+    <label class="opt ${noneChecked?'selected':''}" data-value="nenhuma">
+      <input type="checkbox" name="q" value="nenhuma" ${noneChecked?'checked':''} />
+      <span>Nenhuma das anteriores</span>
+    </label>`;
+        } else {
+            opts = node.options.map((opt, idx)=>{
+                const checked = saved===opt.value;
+                return `<label class="opt ${checked?'selected':''}" data-value="${opt.value}">
       <input type="radio" name="q" value="${opt.value}" ${checked?'checked':''} />
       <span>${opt.label}</span>
     </label>`;
-        }).join('');
-        const helpBtn = node.meta && HELP[node.meta] ?
-            `<button id="btnHelp" class="btn btn-ghost" type="button">Ver critérios ${node.meta}</button>` : '';
+            }).join('');
+        }
+
+        const helpBtn = node.meta && HELP[node.meta] && !isCriteriaQuestion(node) ?
+            `<button id="btnHelp" class="btn btn-ghost" type="button">Ver critérios</button>` : '';
 
         stageEl.innerHTML = `<div class="q">
-    <div class="q-title">${node.title}${node.meta?` <span class="badge">${node.meta}</span>`:''}</div>
+    <div class="q-title">${node.title}</div>
     <div class="q-desc">${node.desc||''}</div>
     ${helpBtn}
     <div class="options">${opts}</div>
@@ -451,14 +484,55 @@
         }
 
 
-        stageEl.querySelectorAll('.opt').forEach(el=>{
-            el.addEventListener('click',()=>{
-                stageEl.querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
-                el.classList.add('selected');
-                answers[current] = el.getAttribute('data-value');
-                updateDebug();
+        if(isCriteriaQuestion(node)){
+            stageEl.querySelectorAll('.opt').forEach(el=>{
+                el.addEventListener('click',(e)=>{
+                    e.preventDefault();
+                    const value = el.getAttribute('data-value');
+
+                    if(value === "nenhuma"){
+                        criteriaAnswers[current] = [];
+                        answers[current] = "nao";
+                        stageEl.querySelectorAll('.opt').forEach(o=>{
+                            const isNone = o.getAttribute('data-value') === "nenhuma";
+                            o.classList.toggle('selected', isNone);
+                            o.querySelector('input').checked = isNone;
+                        });
+                    } else {
+                        const input = el.querySelector('input');
+                        const selected = new Set(criteriaAnswers[current] || []);
+
+                        if(selected.has(value)){
+                            selected.delete(value);
+                            input.checked = false;
+                            el.classList.remove('selected');
+                        } else {
+                            selected.add(value);
+                            input.checked = true;
+                            el.classList.add('selected');
+                        }
+
+                        const none = stageEl.querySelector('[data-value="nenhuma"]');
+                        none.classList.remove('selected');
+                        none.querySelector('input').checked = false;
+
+                        criteriaAnswers[current] = Array.from(selected);
+                        answers[current] = selected.size > 0 ? "sim" : null;
+                    }
+
+                    updateDebug();
+                });
             });
-        });
+        } else {
+            stageEl.querySelectorAll('.opt').forEach(el=>{
+                el.addEventListener('click',()=>{
+                    stageEl.querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
+                    el.classList.add('selected');
+                    answers[current] = el.getAttribute('data-value');
+                    updateDebug();
+                });
+            });
+        }
         const hb = document.getElementById('btnHelp');
         if(hb){ hb.addEventListener('click', ()=> openHelp(node.meta)); }
 
@@ -466,14 +540,37 @@
         btnBack.disabled = path.length===0;
     }
 
+    function playCompletionSound(){
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if(!AudioContext){ return; }
+
+        const audioCtx = new AudioContext();
+        const oscillator = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const now = audioCtx.currentTime;
+
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(880, now);
+        oscillator.frequency.setValueAtTime(660, now + 0.12);
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.exponentialRampToValueAtTime(0.08, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+
+        oscillator.connect(gain);
+        gain.connect(audioCtx.destination);
+        oscillator.start(now);
+        oscillator.stop(now + 0.3);
+    }
+
     function renderResult(node){
+        playCompletionSound();
         stageEl.innerHTML = `<div class="section-title">Análise</div><div class="note">${node.details}</div>`;
         resultEl.innerHTML = `<div class="result-box" style="background:${node.color}">
     <div class="result-k">Recomendação</div>
     <div class="result-v">${node.label}</div>
     <div class="badge">Algoritmo</div>
   </div>
-  <div class="note">Este resultado é baseado nas respostas fornecidas.</div>`;
+  <div class="note">A recomendação final foi gerada com base nas respostas fornecidas.</div>`;
         btnNext.style.display='none';
         btnBack.disabled = path.length===0;
     }
@@ -539,7 +636,7 @@
     }
 
     function resetAll(){
-        current = FLOW.start; answers = {}; path = [];
+        current = FLOW.start; answers = {}; criteriaAnswers = {}; path = [];
         resultEl.innerHTML = '<p class="note">Responda às perguntas para gerar a recomendação.</p>';
         render();
     }
