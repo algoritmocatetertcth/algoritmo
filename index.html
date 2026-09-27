@@ -51,6 +51,14 @@
         .result-v{font-size:32px;font-weight:800;margin:6px 0}
         .note{background:#e7f3ff;border-left:4px solid var(--brand);padding:12px;font-size:14px;border-radius:6px;color:#084298}
         .badge{display:inline-block;padding:2px 8px;font-size:12px;border-radius:999px;border:1px solid rgba(0,0,0,.15);margin-left:6px}
+        .lit{margin-top:16px}
+        .lit summary{display:inline-flex;align-items:center;gap:8px;list-style:none;user-select:none}
+        .lit summary::-webkit-details-marker{display:none}
+        .lit[open] summary{border-color:var(--brand);color:var(--brand)}
+        .lit-panel{margin-top:12px;border-top:1px solid var(--line);padding-top:4px}
+        .lit-ref{display:block;color:var(--brand);text-decoration:none;font-size:14px;line-height:1.45;padding:10px 0;border-bottom:1px solid var(--line)}
+        .lit-ref:last-child{border-bottom:0}
+        .lit-ref:hover{text-decoration:underline}
         .q-criteria{color:var(--muted);margin-bottom:8px}
         .q-criteria ul{margin:6px 0 0 18px}
         @media(max-width:900px){.grid{grid-template-columns:1fr}}
@@ -370,6 +378,37 @@
         }
     };
 
+    // ===== SUGESTÕES DE LITERATURA (por nó final) =====
+    // Cada chave é o id de um nó final do FLOW, com uma lista de referências { text, url }.
+    // Os valores abaixo são PLACEHOLDERS — substituir pelas referências reais.
+    const PLACEHOLDER_REF = { text: "Sobrenome A, Sobrenome B. Título do artigo. Nome do Periódico. 2024;00(0):000-000.", url: "https://pubmed.ncbi.nlm.nih.gov/" };
+    const LITERATURE = {
+        r_aguardar_intervalo: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
+        r_aguardar_d100: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
+        r_vigilancia_ou_tto_iv: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
+        r_aguardar_melhora_clinica: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
+        r_reavaliar_melhora: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
+        r_aguardar_trat_infeccioso: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
+        r_reavaliar_14_dias: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
+        r_reavaliar_dechc_leve: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
+        r_reavaliar_para_dechc_leve: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
+        r_manter: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
+        r_retirar: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
+        r_retirar_pos_reorientacao: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF]
+    };
+
+    const BOOK_ICON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`;
+
+    function renderLiterature(nodeId){
+        const refs = LITERATURE[nodeId];
+        if(!refs || !refs.length) return '';
+        const body = refs.map(r=>`<a class="lit-ref" href="${r.url}" target="_blank" rel="noopener">${r.text}</a>`).join('');
+        return `<details class="lit">
+    <summary class="btn btn-ghost">${BOOK_ICON}<span>Sugestões de Literatura</span></summary>
+    <div class="lit-panel">${body}</div>
+  </details>`;
+    }
+
     // ===== RENDER/CONTROLS =====
     const stageEl = document.getElementById('stage');
     const resultEl = document.getElementById('result');
@@ -522,7 +561,8 @@
     <div class="result-v">${node.label}</div>
     <div class="badge">Algoritmo</div>
   </div>
-  <div class="note">A recomendação final foi gerada com base nas respostas fornecidas.</div>`;
+  <div class="note">A recomendação final foi gerada com base nas respostas fornecidas.</div>
+  ${renderLiterature(current)}`;
         btnNext.style.display='none';
         btnBack.disabled = path.length===0;
     }
