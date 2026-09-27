@@ -55,9 +55,8 @@
         .result-v{font-size:32px;font-weight:800;margin:6px 0}
         .note{background:#e7f3ff;border-left:4px solid var(--brand);padding:12px;font-size:14px;border-radius:6px;color:#084298}
         .badge{display:inline-block;padding:2px 8px;font-size:12px;border-radius:999px;border:1px solid rgba(0,0,0,.15);margin-left:6px}
-        #modalHelp{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);align-items:center;justify-content:center}
-        #modalHelp .box{background:#fff;border-radius:10px;max-width:680px;width:92%;padding:18px;border:1px solid var(--line)}
-        #helpContent ul{margin:8px 0 0 18px}
+        .q-criteria{color:var(--muted);margin-bottom:8px}
+        .q-criteria ul{margin:6px 0 0 18px}
         @media(max-width:900px){.grid{grid-template-columns:1fr}}
     </style>
 </head>
@@ -70,7 +69,7 @@
             <br>
             Desenvolvido no âmbito do Programa de Pós-Graduação em Clínica Médica (PPGCM/UFRJ).
             <br>
-            Versão baseada no <a href="algoritmo.pdf">fluxograma</a>.
+            Versão baseada no <a href="fluxograma.html">fluxograma</a>.
         </div>
     </div>
 </header>
@@ -92,34 +91,23 @@
     </aside>
 </main>
 
-<!-- Modal de ajuda -->
-<div id="modalHelp">
-    <div class="box">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-            <div class="section-title" style="border-bottom:0;margin:0">Critérios</div>
-            <button id="btnCloseHelp" class="btn btn-ghost">Fechar</button>
-        </div>
-        <div id="helpContent" class="muted"></div>
-    </div>
-</div>
-
 <script>
     // ===== HELP BOXES (1*,2*,3*,4*) =====
     const HELP = {
         flogisticos: {
-            title: "Suspeita de infecção relacionada ao cateter",
+            title: "",
             items: [
                 "Sinais flogísticos, após exclusão de reação a corpo estranho ou farmacodermia.",
                 "Sinais clínicos de infecção ou febre persistente com provável relação com o CVC."
             ]
         },
         "1*": {
-            title: "Adesão às boas práticas de manutenção do cateter",
+            title: "O paciente:",
             items: [
-                "Comparecer às consultas de manutenção e curativo a cada 7 dias.",
-                "Proteger o curativo e o cateter de sujidades.",
-                "Proteger o curativo e o cateter para não molhar.",
-                "Não realizar automanuseio do cateter e do curativo.",
+                "Comparece às consultas de manutenção e curativo a cada 7 dias.",
+                "Protege o curativo e o cateter de sujidades.",
+                "Protege o curativo e o cateter para não molhar.",
+                "Não realiza automanuseio do cateter e do curativo.",
                 "Retorna à consulta com curativo íntegro."
             ]
         },
@@ -180,6 +168,7 @@
                 type: "q", step: 1, meta: "flogisticos",
                 title: "Paciente com suspeita de infecção relacionada ao cateter?",
                 desc: "",
+
                 options: [
                     { value: "sim", label: "Sim", next: "r_retirar" },
                     { value: "nao", label: "Não", next: "q_intervalo_7" }
@@ -198,7 +187,7 @@
             // 1* adesão
             q_adesao: {
                 type: "q", step: 3, meta: "1*",
-                title: "Paciente e cuidados com adesão às boas práticas de manutenção do cateter?",
+                title: "Paciente e cuidador com adesão às boas práticas de manutenção do cateter?",
                 desc: "",
                 options: [
                     { value: "sim", label: "Sim", next: "q_alto_risco" },
@@ -417,22 +406,6 @@
         progressEl.innerHTML = html;
     }
 
-    function openHelp(meta){
-        const box = HELP[meta];
-        if(!box){ return; }
-        const el = document.getElementById('helpContent');
-        el.innerHTML = `<div style="font-weight:600">${box.title}</div>` +
-            `<ul>${box.items.map(i=>`<li>${i}</li>`).join('')}</ul>`;
-        document.getElementById('modalHelp').style.display = 'flex';
-    }
-
-    document.getElementById('btnCloseHelp').addEventListener('click',()=>{
-        document.getElementById('modalHelp').style.display='none';
-    });
-    document.getElementById('modalHelp').addEventListener('click',(e)=>{
-        if(e.target.id==='modalHelp') document.getElementById('modalHelp').style.display='none';
-    });
-
     function renderQuestion(node){
         const saved = answers[current];
         let opts = '';
@@ -463,13 +436,15 @@
             }).join('');
         }
 
-        const helpBtn = node.meta && HELP[node.meta] && !isCriteriaQuestion(node) ?
-            `<button id="btnHelp" class="btn btn-ghost" type="button">Ver critérios</button>` : '';
+        const help = node.meta && HELP[node.meta] && !isCriteriaQuestion(node) ? HELP[node.meta] : null;
+        const criteriaInfo = help ?
+            `<div class="q-criteria"><div style="font-weight:600">${help.title}</div>` +
+            `<ul>${help.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>` : '';
 
         stageEl.innerHTML = `<div class="q">
     <div class="q-title">${node.title}</div>
     <div class="q-desc">${node.desc||''}</div>
-    ${helpBtn}
+    ${criteriaInfo}
     <div class="options">${opts}</div>
   </div>`;
 
@@ -485,32 +460,30 @@
 
 
         if(isCriteriaQuestion(node)){
-            stageEl.querySelectorAll('.opt').forEach(el=>{
-                el.addEventListener('click',(e)=>{
-                    e.preventDefault();
+            // O próprio checkbox (via <label>) alterna o estado; aqui apenas sincronizamos.
+            stageEl.querySelectorAll('.opt input').forEach(input=>{
+                input.addEventListener('change',()=>{
+                    const el = input.closest('.opt');
                     const value = el.getAttribute('data-value');
 
                     if(value === "nenhuma"){
                         criteriaAnswers[current] = [];
-                        answers[current] = "nao";
+                        answers[current] = input.checked ? "nao" : null;
                         stageEl.querySelectorAll('.opt').forEach(o=>{
                             const isNone = o.getAttribute('data-value') === "nenhuma";
-                            o.classList.toggle('selected', isNone);
-                            o.querySelector('input').checked = isNone;
+                            const on = isNone && input.checked;
+                            o.classList.toggle('selected', on);
+                            o.querySelector('input').checked = on;
                         });
                     } else {
-                        const input = el.querySelector('input');
                         const selected = new Set(criteriaAnswers[current] || []);
 
-                        if(selected.has(value)){
-                            selected.delete(value);
-                            input.checked = false;
-                            el.classList.remove('selected');
-                        } else {
+                        if(input.checked){
                             selected.add(value);
-                            input.checked = true;
-                            el.classList.add('selected');
+                        } else {
+                            selected.delete(value);
                         }
+                        el.classList.toggle('selected', input.checked);
 
                         const none = stageEl.querySelector('[data-value="nenhuma"]');
                         none.classList.remove('selected');
@@ -533,9 +506,6 @@
                 });
             });
         }
-        const hb = document.getElementById('btnHelp');
-        if(hb){ hb.addEventListener('click', ()=> openHelp(node.meta)); }
-
         btnNext.style.display='inline-flex';
         btnBack.disabled = path.length===0;
     }
