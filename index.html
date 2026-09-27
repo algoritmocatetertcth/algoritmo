@@ -672,7 +672,7 @@
     }
 
     function updateDebug(){
-        if(debugEl.style.display==='none') return;
+        if(!debugEl || debugEl.style.display==='none') return;
         const n = FLOW.nodes[current];
         debugEl.textContent = JSON.stringify({current, type:n.type, step:n.step||null, answer:answers[current]||null, path}, null, 2);
     }
