@@ -244,7 +244,7 @@
             q_alto_risco: {
                 type: "q", step: 5, meta: "2*",
                 title: "Paciente de alto risco para complicações pós-transplante?",
-                desc: "",
+                desc: "Condições do transplante e da internação do TCTH.",
                 options: [
                     { value: "sim", label: "Sim", next: "q_d100" },
                     { value: "nao", label: "Não", next: "q_agudas" }
@@ -264,7 +264,7 @@
             q_agudas: {
                 type: "q", step: 7, meta: "3*",
                 title: "Apresenta alguma das condições agudas?",
-                desc: "",
+                desc: "Condições atuais no ambulatório.",
                 options: [
                     { value: "sim", label: "Sim", next: "q_agudas_avaliar" },
                     { value: "nao", label: "Não", next: "q_dech" }
