@@ -177,7 +177,8 @@
             // Tela inicial
             inicio: {
                 type: "start", next: "q_flogisticos",
-                title: "Ferramenta aplicável em cada consulta ambulatorial de retorno pós-transplante."
+                title: "Quando usar?",
+                desc: "Ferramenta aplicável em cada consulta ambulatorial de retorno pós-transplante."
             },
             // 0) Sinais flogísticos
             q_flogisticos: {
@@ -593,7 +594,10 @@
 
     function renderStart(node){
         stageEl.innerHTML = `<div class="start">
-    <div class="q-title">${node.title}</div>
+    <div>
+      <div class="q-title">${node.title}</div>
+      <div class="q-desc">${node.desc||''}</div>
+    </div>
     <button id="btnStart" class="btn btn-primary" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg><span>Iniciar</span></button>
   </div>`;
         document.getElementById('btnStart').addEventListener('click', ()=>{
