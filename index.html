@@ -19,6 +19,8 @@
         .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
         .section-title{font-weight:600;font-size:18px;padding-bottom:10px;border-bottom:2px solid var(--brand);margin-bottom:16px}
         .q-title{font-weight:600;font-size:18px;margin-bottom:4px}
+        .start{display:flex;flex-direction:column;align-items:flex-start;gap:18px;padding:8px 0}
+        .btnbar[hidden]{display:none}
         .q-desc{color:var(--muted);margin-bottom:8px}
         .options{display:grid;gap:10px;margin-top:10px}
         .opt{display:flex;gap:10px;padding:12px 14px;border:2px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;transition:.15s}
@@ -169,8 +171,13 @@
 
     // ===== FLOW (aderente ao PNG Parte 1) =====
     const FLOW = {
-        start: "q_flogisticos",
+        start: "inicio",
         nodes: {
+            // Tela inicial
+            inicio: {
+                type: "start", next: "q_flogisticos",
+                title: "Algoritmo clínico para retirada de cateter venoso central de longa permanência em pacientes pós-transplante alogênico de células-tronco hematopoieticas."
+            },
             // 0) Sinais flogísticos
             q_flogisticos: {
                 type: "q", step: 1, meta: "flogisticos",
@@ -411,6 +418,7 @@
     const btnBack = document.getElementById('btnBack');
     const btnReset = document.getElementById('btnReset');
     const btnNext = document.getElementById('btnNext');
+    const btnBar = document.querySelector('.btnbar');
 
     let current = FLOW.start;
     let answers = {};
@@ -562,10 +570,25 @@
         btnBack.disabled = path.length===0;
     }
 
+    function renderStart(node){
+        stageEl.innerHTML = `<div class="start">
+    <div class="q-title">${node.title}</div>
+    <button id="btnStart" class="btn btn-primary" type="button">Iniciar</button>
+  </div>`;
+        document.getElementById('btnStart').addEventListener('click', ()=>{
+            path.push(current);
+            current = node.next;
+            render();
+        });
+    }
+
     function render(){
         const node = FLOW.nodes[current];
         if(!node){ stageEl.innerHTML = '<div class="note">Nó inválido. Reinicie.</div>'; return; }
-        if(node.type==='q') renderQuestion(node); else renderResult(node);
+        btnBar.hidden = node.type==='start';
+        if(node.type==='start') renderStart(node);
+        else if(node.type==='q') renderQuestion(node);
+        else renderResult(node);
         updateDebug();
     }
 
