@@ -21,6 +21,7 @@
         .q-title{font-weight:600;font-size:18px;margin-bottom:4px}
         .start{display:flex;flex-direction:column;align-items:flex-start;gap:18px;padding:8px 0}
         .btnbar[hidden]{display:none}
+        #btnStart{display:inline-flex;align-items:center;gap:8px}
         .q-desc{color:var(--muted);margin-bottom:8px}
         .options{display:grid;gap:10px;margin-top:10px}
         .opt{display:flex;gap:10px;padding:12px 14px;border:2px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;transition:.15s}
@@ -573,7 +574,7 @@
     function renderStart(node){
         stageEl.innerHTML = `<div class="start">
     <div class="q-title">${node.title}</div>
-    <button id="btnStart" class="btn btn-primary" type="button">Iniciar</button>
+    <button id="btnStart" class="btn btn-primary" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg><span>Iniciar</span></button>
   </div>`;
         document.getElementById('btnStart').addEventListener('click', ()=>{
             path.push(current);
