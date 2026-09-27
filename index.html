@@ -267,7 +267,7 @@
                 desc: "",
                 options: [
                     { value: "sim", label: "Sim", next: "q_agudas_avaliar" },
-                    { value: "nao", label: "Não", next: "q_dech_aguda" }
+                    { value: "nao", label: "Não", next: "q_dech" }
                 ]
             },
             q_reorientar_cuidados: {
@@ -285,7 +285,17 @@
                 desc: "Selecione uma das opções.",
                 options: [
                     { value: "vig_iv", label: "Necessita de vigilância clínica ou tratamento intravenoso", next: "r_aguardar_melhora_clinica" },
-                    { value: "tto_vo", label: "Apresenta controle clínico adequado e tratamento é apenas por via oral", next: "q_dech_aguda" }
+                    { value: "tto_vo", label: "Apresenta controle clínico adequado e tratamento é apenas por via oral", next: "q_dech" }
+                ]
+            },
+            // DECH (aguda ou crônica)
+            q_dech: {
+                type: "q", step: 10, meta: null,
+                title: "Com DECH?",
+                desc: "",
+                options: [
+                    { value: "sim", label: "Sim", next: "q_dech_aguda" },
+                    { value: "nao", label: "Não", next: "q_outras_condicoes" }
                 ]
             },
             // DECH aguda
