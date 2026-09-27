@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Algoritmo — Fluxograma e Quadros</title>
+    <style>
+        :root{
+            --bg:#f7f8fa; --text:#212529; --muted:#6c757d; --line:#dee2e6;
+            --brand:#0d6efd;
+        }
+        *{box-sizing:border-box}
+        body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+        .header{background:#fff;border-bottom:1px solid var(--line);padding:16px 0;position:sticky;top:0;z-index:10}
+        .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+        h1{margin:4px 0 2px;font-size:26px}
+        .subtitle{color:var(--muted);font-size:14px}
+        .subtitle a{color:var(--brand)}
+        main{max-width:1100px;margin:24px auto;padding:0 20px;display:grid;gap:24px}
+        .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+        .section-title{font-weight:600;font-size:18px;padding-bottom:10px;border-bottom:2px solid var(--brand);margin-bottom:16px}
+        .figure img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px}
+        .figure .hint{color:var(--muted);font-size:13px;margin-top:8px}
+        .table-wrap{overflow-x:auto}
+        table{width:100%;border-collapse:collapse;font-size:15px}
+        th,td{border:1px solid var(--line);padding:12px 14px;text-align:left;vertical-align:top}
+        thead th{background:var(--brand);color:#fff;font-weight:600}
+        tbody tr:nth-child(even){background:#f8f9fb}
+        td.num{width:56px;text-align:center;font-weight:700;color:var(--brand);font-size:18px}
+        td.crit{width:32%;font-weight:600}
+        td.crit small{display:block;font-weight:400;color:var(--muted);margin-top:4px}
+        td ul{margin:0;padding-left:18px}
+        td li{margin:3px 0}
+        @media(max-width:700px){td.crit{width:auto}}
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="wrap">
+        <h1>Fluxograma e Quadros do Algoritmo</h1>
+        <div class="subtitle">
+            Algoritmo clínico para retirada de cateter venoso central de longa permanência em pacientes pós-transplante alogênico de células-tronco hematopoiéticas.
+            <br>
+            <a href="index.html">← Voltar ao algoritmo interativo</a>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="card figure">
+        <div class="section-title">Fluxograma</div>
+        <a href="algoritmo_v3.png" target="_blank" rel="noopener">
+            <img src="algoritmo_v3.png" alt="Fluxograma do algoritmo de decisão clínica para retirada de cateter" />
+        </a>
+        <div class="hint">Clique na imagem para abri-la em tamanho original.</div>
+    </section>
+
+    <section class="card">
+        <div class="section-title">Quadros dos critérios</div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Nº</th>
+                    <th>Critério</th>
+                    <th>Condições</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="num">1*</td>
+                    <td class="crit">Suspeita de infecção relacionada ao cateter</td>
+                    <td>
+                        <ul>
+                            <li>Sinais flogísticos, após exclusão de reação a corpo estranho ou farmacodermia</li>
+                            <li>Sinais clínicos de infecção ou febre persistente, com provável relação com o cateter</li>
+                            <li>Tremor após manipulação do cateter</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">2*</td>
+                    <td class="crit">Adesão às boas práticas de manutenção do cateter</td>
+                    <td>
+                        <ul>
+                            <li>Comparece às consultas de manutenção e curativo a cada 7 dias</li>
+                            <li>Protege o curativo e o cateter de sujidades</li>
+                            <li>Protege o curativo e o cateter para não molhar</li>
+                            <li>Não realiza automanuseio do cateter e do curativo</li>
+                            <li>Retorna à consulta com curativo íntegro</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">3*</td>
+                    <td class="crit">Pacientes de alto risco para complicações pós-transplante
+                        <small>(condições do transplante e da internação do TCTH)</small></td>
+                    <td>
+                        <ul>
+                            <li>Haploidêntico</li>
+                            <li>TCTH com doença em atividade</li>
+                            <li>Doença com alto risco de recidiva</li>
+                            <li>Alto índice de comorbidades (HCT-I)</li>
+                            <li>Frágil</li>
+                            <li>Internação prolongada no TCTH</li>
+                            <li>Internação em UTI no TCTH</li>
+                            <li>Síndrome de obstrução sinusoidal (SOS/VOD) hepática no TCTH</li>
+                            <li>Infecção documentada no TCTH</li>
+                            <li>CMV reativado no TCTH</li>
+                            <li>DECH aguda no TCTH</li>
+                            <li>Necessitou de atendimento de emergência após alta</li>
+                            <li>Proposta de realização de infusão de linfócitos do doador (DLI)</li>
+                            <li>Outra</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">4*</td>
+                    <td class="crit">Condições agudas
+                        <small>(condições atuais no ambulatório)</small></td>
+                    <td>
+                        <ul>
+                            <li>Sangramento moderado</li>
+                            <li>Cistite hemorrágica</li>
+                            <li>Hipovolemia</li>
+                            <li>Nível de consciência alterado</li>
+                            <li>Sinal vital alterado</li>
+                            <li>Disfunção orgânica</li>
+                            <li>Distúrbio eletrolítico</li>
+                            <li>Mal nutrido</li>
+                            <li>Hipoalbuminemia</li>
+                            <li>Aumento expressivo de carga viral em dois exames consecutivos de carga viral para CMV</li>
+                            <li>Carga viral positiva para CMV há menos de 30 dias</li>
+                            <li>Em curso de infecção NÃO relacionada ao cateter</li>
+                            <li>Sepse há menos de 30 dias</li>
+                            <li>Neutropenia</li>
+                            <li>Plaquetopenia</li>
+                            <li>Anemia</li>
+                            <li>Efeito colateral com regime medicamentoso via oral</li>
+                            <li>Outra</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="num">5*</td>
+                    <td class="crit">Outras condições</td>
+                    <td>
+                        <ul>
+                            <li>Doença linfoproliferativa pós-transplante (PTLD)</li>
+                            <li>Falha de enxerto</li>
+                            <li>Segundo tumor maligno</li>
+                        </ul>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>
