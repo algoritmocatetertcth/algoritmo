@@ -64,14 +64,27 @@
         .lit-ref:hover{text-decoration:underline}
         .q-criteria{color:var(--muted);margin-bottom:8px}
         .q-criteria ul{margin:6px 0 0 18px}
+        .head-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+        .about-btn{display:none;align-items:center;gap:5px;flex-shrink:0;background:none;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:13px;color:var(--muted);cursor:pointer}
+        .about-btn[aria-expanded="true"]{color:var(--brand);border-color:var(--brand)}
         @media(max-width:900px){.grid{grid-template-columns:1fr}}
+        @media(max-width:700px){
+            .header{position:static;padding:12px 0}
+            h1{font-size:19px;margin:0}
+            .about-btn{display:inline-flex}
+            .header .subtitle{display:none;margin-top:8px}
+            .header.about-open .subtitle{display:block}
+        }
     </style>
 </head>
 <body>
 <header class="header">
     <div class="wrap">
-        <h1>Algoritmo — Decisão Clínica para Retirada de Cateter</h1>
-        <div class="subtitle">
+        <div class="head-row">
+            <h1>Algoritmo — Decisão Clínica para Retirada de Cateter</h1>
+            <button id="btnAbout" class="about-btn" type="button" aria-expanded="false" aria-controls="about"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-5"/><path d="M12 8h.01"/></svg><span>Sobre</span></button>
+        </div>
+        <div id="about" class="subtitle">
             Algoritmo clínico para retirada de cateter venoso central de longa permanência em pacientes pós-transplante alogênico de células-tronco hematopoiéticas.
             <br>
             Desenvolvido no âmbito do Programa de Pós-Graduação em Clínica Médica (PPGCM/UFRJ).
@@ -657,6 +670,12 @@
     btnNext.addEventListener('click', next);
     btnBack.addEventListener('click', back);
     btnReset.addEventListener('click', resetAll);
+
+    // Botão "Sobre" (visível apenas em telas estreitas)
+    document.getElementById('btnAbout').addEventListener('click', (e)=>{
+        const open = document.querySelector('.header').classList.toggle('about-open');
+        e.currentTarget.setAttribute('aria-expanded', open);
+    });
 
     // init
     render();
