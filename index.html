@@ -144,6 +144,7 @@
                 "Hipoalbuminemia.",
                 "Aumento expressivo de carga viral em dois exames consecutivos do painel viral para CMV.",
                 "Painel viral positivo para CMV a menos de 30 dias.",
+                "Em curso de infecção NÃO relacionada ao cateter.",
                 "Sepse a menos de 30 dias.",
                 "Neutropenia.",
                 "Plaquetopenia.",
@@ -234,7 +235,7 @@
                 desc: "",
                 options: [
                     { value: "sim", label: "Sim", next: "q_agudas_avaliar" },
-                    { value: "nao", label: "Não", next: "q_infeccao_nao_cateter" }
+                    { value: "nao", label: "Não", next: "q_dech_aguda" }
                 ]
             },
             q_reorientar_cuidados: {
@@ -252,17 +253,7 @@
                 desc: "Selecione uma das opções.",
                 options: [
                     { value: "vig_iv", label: "Necessita de vigilância clínica ou tratamento intravenoso", next: "r_aguardar_melhora_clinica" },
-                    { value: "tto_vo", label: "Apresenta controle clínico adequado e tratamento é apenas por via oral", next: "q_infeccao_nao_cateter" }
-                ]
-            },
-            // infecção não relacionada
-            q_infeccao_nao_cateter: {
-                type: "q", step: 9, meta: null,
-                title: "Em curso de infecção não relacionada ao cateter?",
-                desc: "",
-                options: [
-                    { value: "sim", label: "Sim", next: "r_aguardar_trat_infeccioso" },
-                    { value: "nao", label: "Não", next: "q_dech_aguda" }
+                    { value: "tto_vo", label: "Apresenta controle clínico adequado e tratamento é apenas por via oral", next: "q_dech_aguda" }
                 ]
             },
             // DECH aguda
