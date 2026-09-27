@@ -186,6 +186,26 @@
                 desc: "",
 
                 options: [
+                    { value: "sim", label: "Sim", next: "q_acesso_dificil_infeccao" },
+                    { value: "nao", label: "Não", next: "q_intervalo_7" }
+                ]
+            },
+            // Suspeita de infecção: acesso periférico difícil
+            q_acesso_dificil_infeccao: {
+                type: "q", step: 1, meta: null,
+                title: "Acesso venoso periférico difícil ou dificuldade de nova punção profunda?",
+                desc: "",
+                options: [
+                    { value: "sim", label: "Sim", next: "q_tratado_14" },
+                    { value: "nao", label: "Não", next: "r_retirar" }
+                ]
+            },
+            // Suspeita de infecção: cateter já em tratamento/observação
+            q_tratado_14: {
+                type: "q", step: 1, meta: null,
+                title: "Cateter já sendo tratado/observado por intervalo IGUAL OU MAIOR que 14 dias?",
+                desc: "",
+                options: [
                     { value: "sim", label: "Sim", next: "r_retirar" },
                     { value: "nao", label: "Não", next: "q_intervalo_7" }
                 ]
