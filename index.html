@@ -18,10 +18,6 @@
         .grid{max-width:1100px;margin:24px auto;padding:0 20px;display:grid;grid-template-columns:2fr 1fr;gap:24px}
         .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
         .section-title{font-weight:600;font-size:18px;padding-bottom:10px;border-bottom:2px solid var(--brand);margin-bottom:16px}
-        .progress{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
-        .step{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
-        .step .n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#e9ecef;color:#6c757d;font-weight:700}
-        .step.active .n{background:var(--brand);color:#fff}.step.done .n{background:var(--ok);color:#fff}
         .q-title{font-weight:600;font-size:18px;margin-bottom:4px}
         .q-desc{color:var(--muted);margin-bottom:8px}
         .options{display:grid;gap:10px;margin-top:10px}
@@ -76,7 +72,6 @@
 
 <main class="grid">
     <section class="card">
-        <div id="progress" class="progress"></div>
         <div id="stage"></div>
         <div class="btnbar">
             <button id="btnReset" class="btn btn-ghost btn-reset" type="button">Reiniciar</button>
@@ -378,7 +373,6 @@
     // ===== RENDER/CONTROLS =====
     const stageEl = document.getElementById('stage');
     const resultEl = document.getElementById('result');
-    const progressEl = document.getElementById('progress');
     const debugEl = document.getElementById('debug');
     const btnBack = document.getElementById('btnBack');
     const btnReset = document.getElementById('btnReset');
@@ -393,18 +387,6 @@
         return ["2*", "3*", "4*"].includes(node.meta);
     }
 
-    function renderProgress(){
-        const qNodes = Object.values(FLOW.nodes).filter(n=>n.type==='q');
-        const maxStep = Math.max(...qNodes.map(n=>n.step||1));
-        const node = FLOW.nodes[current];
-        const activeStep = node.type==='q' ? (node.step||1) : maxStep;
-        let html='';
-        for(let i=1;i<=maxStep;i++){
-            const cls = i<activeStep ? 'step done' : (i===activeStep?'step active':'step');
-            html += `<div class="${cls}"><div class="n">${i}</div><span>Passo ${i}</span></div>`;
-        }
-        progressEl.innerHTML = html;
-    }
 
     function renderQuestion(node){
         const saved = answers[current];
@@ -546,7 +528,6 @@
     }
 
     function render(){
-        renderProgress();
         const node = FLOW.nodes[current];
         if(!node){ stageEl.innerHTML = '<div class="note">Nó inválido. Reinicie.</div>'; return; }
         if(node.type==='q') renderQuestion(node); else renderResult(node);
