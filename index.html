@@ -99,6 +99,7 @@
     const HELP = {
         flogisticos: {
             title: "",
+
             items: [
                 "Sinais flogísticos, após exclusão de reação a corpo estranho ou farmacodermia.",
                 "Sinais clínicos de infecção ou febre persistente com provável relação com o CVC."
@@ -122,10 +123,10 @@
                 "TCTH com doença em atividade.",
                 "Doença com alto risco de recidiva.",
                 "Haploidêntico.",
-                "Proposta de realização de DLI.",
+                "Proposta de realização de infusão de linfócitos do doador (DLI).",
                 "Internação prolongada no TCTH.",
                 "Internação em UTI no TCTH.",
-                "SOS hepática no TCTH.",
+                "Síndrome de obstrução sinusoidal (SOS/VOD) hepática no TCTH.",
                 "Infecção documentada no TCTH.",
                 "Necessitou de atendimento de emergência após alta."
             ]
@@ -181,7 +182,7 @@
             // 1) Intervalo > 7 dias
             q_intervalo_7: {
                 type: "q", step: 2, meta: null,
-                title: "Intervalo entre as consultas é superior a 7 dias?",
+                title: "Intervalo entre as consultas é maior que 7 dias?",
                 desc: "",
                 options: [
                     { value: "sim", label: "Sim", next: "q_comp_mecanica" },
