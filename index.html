@@ -72,7 +72,7 @@
     <div class="wrap">
         <h1>Algoritmo — Decisão Clínica para Retirada de Cateter</h1>
         <div class="subtitle">
-            Algoritmo clínico para retirada de cateter venoso central de longa permanência em pacientes pós-transplante alogênico de células-tronco hematopoieticas.
+            Algoritmo clínico para retirada de cateter venoso central de longa permanência em pacientes pós-transplante alogênico de células-tronco hematopoiéticas.
             <br>
             Desenvolvido no âmbito do Programa de Pós-Graduação em Clínica Médica (PPGCM/UFRJ).
             <br>
@@ -110,7 +110,7 @@
             ]
         },
         "1*": {
-            title: "O paciente:",
+            title: "O paciente/cuidador:",
             items: [
                 "Comparece às consultas de manutenção e curativo a cada 7 dias.",
                 "Protege o curativo e o cateter de sujidades.",
@@ -123,14 +123,14 @@
             title: "Pacientes de alto risco para complicações pós-transplante",
             items: [
                 "Frágil.",
-                "Alto índice de comorbidades (HCT-I).",
+                "Alto índice de comorbidades (HCT-CI).",
                 "TCTH com doença em atividade.",
                 "Doença com alto risco de recidiva.",
                 "Haploidêntico.",
                 "Proposta de realização de infusão de linfócitos do doador (DLI).",
                 "Internação prolongada no TCTH.",
                 "Internação em UTI no TCTH.",
-                "Síndrome de obstrução sinusoidal (SOS/VOD) hepática no TCTH.",
+                "Síndrome de obstrução sinusoidal hepática (SOS/VOD) no TCTH.",
                 "Infecção documentada no TCTH.",
                 "Necessitou de atendimento de emergência após alta.",
                 "CMV reativado na internação do transplante.",
@@ -149,13 +149,13 @@
                 "Distúrbio eletrolítico.",
                 "Mal nutrido.",
                 "Hipoalbuminemia.",
-                "Aumento expressivo de carga viral em dois exames consecutivos de carga viral para CMV.",
+                "Aumento expressivo da carga viral para CMV em dois exames consecutivos.",
                 "Carga viral positiva para CMV há menos de 30 dias.",
                 "Em curso de infecção NÃO relacionada ao cateter.",
                 "Sepse há menos de 30 dias.",
                 "Neutropenia.",
                 "Plaquetopenia.",
-                "Anemia",
+                "Anemia.",
                 "Efeito colateral com regime medicamentoso via oral."
 
             ]
@@ -163,7 +163,7 @@
         "4*": {
             title: "Outras condições",
             items: [
-                "Doença linfoproliferativa pós transplante (PTLD).",
+                "Doença linfoproliferativa pós-transplante (PTLD).",
                 "Falha de enxerto.",
                 "Segundo tumor maligno."
             ]
@@ -374,7 +374,7 @@
                     { value: "nao", label: "Não", next: "r_retirar_pos_reorientacao" }
                 ]
             },
-            r_aguardar_intervalo: { type:"result", label:"Reavaliar na próxima consulta/Aguardar intervalo entre consultas ser superior a 7 dias", color:"#fd7e14",
+            r_aguardar_intervalo: { type:"result", label:"Reavaliar na próxima consulta / Aguardar intervalo entre consultas ser superior a 7 dias", color:"#fd7e14",
                 details:"" },
             r_aguardar_d100: { type:"result", label:"Reavaliar na próxima consulta / Aguardar preferencialmente até D+100", color:"#fd7e14",
                 details:"" },
