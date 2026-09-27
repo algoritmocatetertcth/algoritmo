@@ -294,18 +294,18 @@
                 title: "Com DECH?",
                 desc: "",
                 options: [
-                    { value: "sim", label: "Sim", next: "q_dech_aguda" },
+                    { value: "sim", label: "Sim", next: "q_dech_tipo" },
                     { value: "nao", label: "Não", next: "q_outras_condicoes" }
                 ]
             },
-            // DECH aguda
-            q_dech_aguda: {
+            // Tipo de DECH (apenas opções, sem pergunta)
+            q_dech_tipo: {
                 type: "q", step: 10, meta: null,
-                title: "Com DECH aguda?",
+                title: "",
                 desc: "",
                 options: [
-                    { value: "sim", label: "Sim", next: "q_dech_aguda_grau" },
-                    { value: "nao", label: "Não", next: "q_dech_cronica" }
+                    { value: "aguda", label: "DECH aguda", next: "q_dech_aguda_grau" },
+                    { value: "cronica", label: "DECH crônica", next: "q_dech_cronica_grau" }
                 ]
             },
             q_dech_aguda_grau: {
@@ -322,18 +322,8 @@
                 title: "Estável há pelo menos 14 dias?",
                 desc: "",
                 options: [
-                    { value: "sim", label: "Sim", next: "q_dech_cronica" },
+                    { value: "sim", label: "Sim", next: "q_outras_condicoes" },
                     { value: "nao", label: "Não", next: "r_reavaliar_14_dias" }
-                ]
-            },
-            // DECH crônica
-            q_dech_cronica: {
-                type: "q", step: 13, meta: null,
-                title: "Com DECH crônica?",
-                desc: "",
-                options: [
-                    { value: "sim", label: "Sim", next: "q_dech_cronica_grau" },
-                    { value: "nao", label: "Não", next: "q_outras_condicoes" }
                 ]
             },
             q_dech_cronica_grau: {
@@ -629,29 +619,6 @@
 
         const v = answers[current];
         if(!v){ alert('Selecione uma opção.'); return; }
-
-        // ===== Regra especial: Passo 12 (q_estavel_14) =====
-        // Se veio do 11 (q_dech_aguda_grau) e respondeu "sim" -> vai para o 13 (q_dech_cronica)
-        // Se veio do 14 (q_dech_cronica_grau) e respondeu "sim" -> vai para o 15 (q_outras_condicoes)
-        if (current === "q_estavel_14" && v === "sim") {
-            const prev = path[path.length - 1];
-            path.push(current);
-
-            if (prev === "q_dech_aguda_grau") {
-                current = "q_dech_cronica";     // Passo 13
-            } else if (prev === "q_dech_cronica_grau") {
-                current = "q_outras_condicoes"; // Passo 15
-            } else {
-                current = "q_dech_cronica";
-            }
-
-            if (node.banner) {
-                resultEl.innerHTML = '<p class="note">Responda às perguntas para gerar a recomendação.</p>';
-            }
-
-            render();
-            return;
-        }
 
         // ===== Fluxo padrão =====
         const opt = node.options.find(o=>o.value===v);
