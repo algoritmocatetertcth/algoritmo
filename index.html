@@ -19,6 +19,7 @@
         .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
         .section-title{font-weight:600;font-size:18px;padding-bottom:10px;border-bottom:2px solid var(--brand);margin-bottom:16px}
         .q-title{font-weight:600;font-size:18px;margin-bottom:4px}
+        .q-title strong{font-weight:800}
         .start{display:flex;flex-direction:column;align-items:flex-start;gap:18px;padding:8px 0}
         .btnbar[hidden]{display:none}
         #btnStart{display:inline-flex;align-items:center;gap:8px}
@@ -164,7 +165,7 @@
                 "Hipoalbuminemia.",
                 "Aumento expressivo da carga viral para CMV em dois exames consecutivos.",
                 "Carga viral positiva para CMV há menos de 30 dias.",
-                "Em curso de infecção NÃO relacionada ao cateter.",
+                "Em curso de infecção <strong>não</strong> relacionada ao cateter.",
                 "Sepse há menos de 30 dias.",
                 "Neutropenia.",
                 "Plaquetopenia.",
@@ -216,7 +217,7 @@
             // Suspeita de infecção: cateter já em tratamento/observação
             q_tratado_14: {
                 type: "q", step: 1, meta: null,
-                title: "Cateter já sendo tratado/observado por intervalo IGUAL OU MAIOR que 14 dias?",
+                title: "Cateter já sendo tratado/observado por intervalo <strong>igual ou maior</strong> que 14 dias?",
                 desc: "",
                 options: [
                     { value: "sim", label: "Sim", next: "r_retirar" },
@@ -226,7 +227,7 @@
             // 1) Intervalo > 7 dias
             q_intervalo_7: {
                 type: "q", step: 2, meta: null,
-                title: "Intervalo entre as consultas é maior que 7 dias?",
+                title: "Intervalo entre as consultas é <strong>maior</strong> que 7 dias?",
                 desc: "",
                 options: [
                     { value: "sim", label: "Sim", next: "q_comp_mecanica" },
@@ -266,7 +267,7 @@
             // D+100
             q_d100: {
                 type: "q", step: 6, meta: null,
-                title: "Tempo de transplante igual ou superior a D+100?",
+                title: "Tempo de transplante <strong>igual ou superior</strong> a D+100?",
                 desc: "",
                 options: [
                     { value: "sim", label: "Sim", next: "q_agudas" },
@@ -332,7 +333,7 @@
             },
             q_estavel_14: {
                 type: "q", step: 12, meta: null,
-                title: "Estável há pelo menos 14 dias?",
+                title: "Estável há <strong>pelo menos</strong> 14 dias?",
                 desc: "",
                 options: [
                     { value: "sim", label: "Sim", next: "q_outras_condicoes" },
