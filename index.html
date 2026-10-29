@@ -68,9 +68,15 @@
         .head-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
         .about-btn{display:none;align-items:center;gap:5px;flex-shrink:0;background:none;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:13px;color:var(--muted);cursor:pointer}
         .about-btn[aria-expanded="true"]{color:var(--brand);border-color:var(--brand)}
+        .header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+        .language-switch{display:flex;gap:4px;align-items:center}
+        .language-switch button{border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 7px;cursor:pointer;font-size:12px;color:var(--text)}
+        .language-switch button[aria-pressed="true"]{border-color:var(--brand);background:#e7f1ff;color:#084298;font-weight:700}
+        .language-switch button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
         @media(max-width:900px){.grid{grid-template-columns:1fr}}
         @media(max-width:700px){
             .header{position:static;padding:12px 0}
+            .head-row{align-items:flex-start;flex-wrap:wrap}
             h1{font-size:19px;margin:0}
             .about-btn{display:inline-flex}
             .header .subtitle{display:none;margin-top:8px}
@@ -82,15 +88,21 @@
 <header class="header">
     <div class="wrap">
         <div class="head-row">
-            <h1>Algoritmo — Decisão Clínica para Retirada de Cateter</h1>
-            <button id="btnAbout" class="about-btn" type="button" aria-expanded="false" aria-controls="about"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-5"/><path d="M12 8h.01"/></svg><span>Sobre</span></button>
+            <h1 data-i18n="heading">Algoritmo — Decisão Clínica para Retirada de Cateter</h1>
+            <div class="header-actions">
+                <div class="language-switch" role="group" aria-label="Language / Idioma">
+                    <button type="button" data-language="pt-BR" aria-label="Português" aria-pressed="true">🇧🇷 Português</button>
+                    <button type="button" data-language="en-US" aria-label="English" aria-pressed="false">🇺🇸 English</button>
+                </div>
+                <button id="btnAbout" class="about-btn" type="button" aria-expanded="false" aria-controls="about"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-5"/><path d="M12 8h.01"/></svg><span data-i18n="about">Sobre</span></button>
+            </div>
         </div>
         <div id="about" class="subtitle">
-            Algoritmo clínico para retirada de cateter venoso central de longa permanência em pacientes pós-transplante alogênico de células-tronco hematopoiéticas.
+            <span data-i18n="subtitle">Algoritmo clínico para retirada de cateter venoso central de longa permanência em pacientes pós-transplante alogênico de células-tronco hematopoiéticas.</span>
             <br>
-            Desenvolvido no âmbito do Programa de Pós-Graduação em Clínica Médica (PPGCM/UFRJ).
+            <span data-i18n="developed">Desenvolvido no âmbito do Programa de Pós-Graduação em Clínica Médica (PPGCM/UFRJ).</span>
             <br>
-            Versão baseada no <a href="fluxograma.html">fluxograma</a>.
+            <span data-i18n="basedOn">Versão baseada no</span> <a href="fluxograma.html" data-i18n="flowLink">fluxograma</a>.
         </div>
     </div>
 </header>
@@ -99,18 +111,20 @@
     <section class="card">
         <div id="stage"></div>
         <div class="btnbar">
-            <button id="btnReset" class="btn btn-ghost btn-reset" type="button">Reiniciar</button>
-            <button id="btnBack" class="btn btn-ghost" type="button">← Anterior</button>
-            <button id="btnNext" class="btn btn-primary" type="button">Próximo →</button>
+            <button id="btnReset" class="btn btn-ghost btn-reset" type="button" data-i18n="reset">Reiniciar</button>
+            <button id="btnBack" class="btn btn-ghost" type="button" data-i18n="back">← Anterior</button>
+            <button id="btnNext" class="btn btn-primary" type="button" data-i18n="next">Próximo →</button>
         </div>
     </section>
 
     <aside class="card">
-        <div class="section-title">Resultado</div>
+        <div class="section-title" data-i18n="result">Resultado</div>
         <div id="result"><p class="note">Responda às perguntas para gerar a recomendação.</p></div>
     </aside>
 </main>
 
+<script src="translations.js"></script>
+<script src="literature.js"></script>
 <script>
     // ===== HELP BOXES (1*,2*,3*,4*) =====
     const HELP = {
@@ -415,33 +429,29 @@
         }
     };
 
-    // ===== SUGESTÕES DE LITERATURA (por nó final) =====
-    // Cada chave é o id de um nó final do FLOW, com uma lista de referências { text, url }.
-    // Os valores abaixo são PLACEHOLDERS — substituir pelas referências reais.
-    const PLACEHOLDER_REF = { text: "Sobrenome A, Sobrenome B. Título do artigo. Nome do Periódico. 2024;00(0):000-000.", url: "https://pubmed.ncbi.nlm.nih.gov/" };
-    const LITERATURE = {
-        r_aguardar_intervalo: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
-        r_aguardar_d100: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
-        r_vigilancia_ou_tto_iv: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
-        r_aguardar_melhora_clinica: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
-        r_reavaliar_melhora: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
-        r_aguardar_trat_infeccioso: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
-        r_reavaliar_14_dias: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
-        r_reavaliar_dechc_leve: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
-        r_reavaliar_para_dechc_leve: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
-        r_manter: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
-        r_retirar: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF],
-        r_retirar_pos_reorientacao: [PLACEHOLDER_REF, PLACEHOLDER_REF, PLACEHOLDER_REF]
-    };
+    const LITERATURE = SITE_LITERATURE;
 
     const BOOK_ICON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`;
 
+    function escapeHtml(value){
+        return String(value).replace(/[&<>"']/g, character => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[character]);
+    }
+
     function renderLiterature(nodeId){
-        const refs = LITERATURE[nodeId];
+        // O mesmo resultado "retirar" é alcançado por caminhos clínicos diferentes.
+        // Para retirada sem suspeita de infecção, reutiliza o grupo 3 do documento.
+        const literatureId = nodeId === 'r_retirar'
+            ? (answers.q_flogisticos === 'sim' ? 'r_retirar_infeccao' : 'r_retirar_pos_reorientacao')
+            : nodeId;
+        const refs = LITERATURE[literatureId];
         if(!refs || !refs.length) return '';
-        const body = refs.map(r=>`<a class="lit-ref" href="${r.url}" target="_blank" rel="noopener">${r.text}</a>`).join('');
+        const body = refs.map(r => r.url
+            ? `<a class="lit-ref" href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(r.text)}</a>`
+            : `<div class="lit-ref">${escapeHtml(r.text)}</div>`).join('');
         return `<details class="lit">
-    <summary class="btn btn-ghost">${BOOK_ICON}<span>Sugestões de Literatura</span></summary>
+    <summary class="btn btn-ghost">${BOOK_ICON}<span>${ui('literature')}</span></summary>
     <div class="lit-panel">${body}</div>
   </details>`;
     }
@@ -454,6 +464,35 @@
     const btnReset = document.getElementById('btnReset');
     const btnNext = document.getElementById('btnNext');
     const btnBar = document.querySelector('.btnbar');
+    let language = SITE_LANGUAGE.get();
+    const translation = () => SITE_TRANSLATIONS[language];
+    const ui = (key) => translation().ui[key];
+
+    function localizedNode(id){
+        const node = FLOW.nodes[id];
+        if(language === 'pt-BR') return node;
+        const translated = translation().nodes[id] || {};
+        return {
+            ...node,
+            ...translated,
+            options: node.options && node.options.map(option => ({
+                ...option,
+                label: translated.options?.[option.value] || translation().commonOptions[option.value] || option.label
+            })),
+            banner: node.banner && { ...node.banner, ...translated.banner }
+        };
+    }
+
+    function applyLanguage(){
+        document.documentElement.lang = language;
+        document.title = ui('pageTitle');
+        document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = ui(el.dataset.i18n); });
+        document.querySelectorAll('[data-language]').forEach(button => {
+            button.setAttribute('aria-pressed', String(button.dataset.language === language));
+        });
+        resultEl.innerHTML = `<p class="note">${ui('pending')}</p>`;
+        render();
+    }
 
     let current = FLOW.start;
     let answers = {};
@@ -471,7 +510,7 @@
 
         if(isCriteriaQuestion(node)){
             const selected = criteriaAnswers[current] || [];
-            const criteria = HELP[node.meta].items.map((item, idx)=>{
+            const criteria = (language === 'pt-BR' ? HELP : translation().help)[node.meta].items.map((item, idx)=>{
                 const value = `criterio_${idx}`;
                 const checked = selected.includes(value);
                 return `<label class="opt ${checked?'selected':''}" data-value="${value}">
@@ -483,7 +522,7 @@
             opts = `${criteria}
     <label class="opt ${noneChecked?'selected':''}" data-value="nenhuma">
       <input type="checkbox" name="q" value="nenhuma" ${noneChecked?'checked':''} />
-      <span>Nenhuma das anteriores</span>
+      <span>${ui('none')}</span>
     </label>`;
         } else {
             opts = node.options.map((opt, idx)=>{
@@ -495,7 +534,8 @@
             }).join('');
         }
 
-        const help = node.meta && HELP[node.meta] && !isCriteriaQuestion(node) ? HELP[node.meta] : null;
+        const helpText = language === 'pt-BR' ? HELP : translation().help;
+        const help = node.meta && helpText[node.meta] && !isCriteriaQuestion(node) ? helpText[node.meta] : null;
         const criteriaInfo = help ?
             `<div class="q-criteria"><div style="font-weight:600">${help.title}</div>` +
             `<ul>${help.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>` : '';
@@ -510,11 +550,11 @@
         // se a pergunta tiver um banner, atualiza a área de Resultado
         if (node.banner) {
             resultEl.innerHTML = `<div class="result-box" style="background:${node.banner.color}">
-      <div class="result-k">Recomendação</div>
+      <div class="result-k">${ui('recommendation')}</div>
       <div class="result-v">${node.banner.label}</div>
-      <div class="badge">Algoritmo</div>
+      <div class="badge">${ui('algorithm')}</div>
     </div>
-    <div class="note">${node.banner.details || 'Este resultado é baseado nas respostas fornecidas.'}</div>`;
+    <div class="note">${node.banner.details || ui('basedOnAnswers')}</div>`;
         }
 
 
@@ -593,13 +633,13 @@
 
     function renderResult(node){
         playCompletionSound();
-        stageEl.innerHTML = `<div class="section-title">Análise</div><div class="note">${node.details}</div>`;
+        stageEl.innerHTML = `<div class="section-title">${ui('analysis')}</div><div class="note">${node.details}</div>`;
         resultEl.innerHTML = `<div class="result-box" style="background:${node.color}">
-    <div class="result-k">Recomendação</div>
+    <div class="result-k">${ui('recommendation')}</div>
     <div class="result-v">${node.label}</div>
-    <div class="badge">Algoritmo</div>
+    <div class="badge">${ui('algorithm')}</div>
   </div>
-  <div class="note">A recomendação final foi gerada com base nas respostas fornecidas.</div>
+  <div class="note">${ui('finalBasedOnAnswers')}</div>
   ${renderLiterature(current)}`;
         btnNext.style.display='none';
         btnBack.disabled = path.length===0;
@@ -608,7 +648,7 @@
     function renderStart(node){
         stageEl.innerHTML = `<div class="start">
     <div class="q-title">${node.title}</div>
-    <button id="btnStart" class="btn btn-primary" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg><span>Iniciar</span></button>
+    <button id="btnStart" class="btn btn-primary" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg><span>${ui('start')}</span></button>
   </div>`;
         document.getElementById('btnStart').addEventListener('click', ()=>{
             path.push(current);
@@ -618,8 +658,8 @@
     }
 
     function render(){
-        const node = FLOW.nodes[current];
-        if(!node){ stageEl.innerHTML = '<div class="note">Nó inválido. Reinicie.</div>'; return; }
+        const node = localizedNode(current);
+        if(!node){ stageEl.innerHTML = `<div class="note">${ui('invalidNode')}</div>`; return; }
         btnBar.hidden = node.type==='start';
         if(node.type==='start') renderStart(node);
         else if(node.type==='q') renderQuestion(node);
@@ -632,17 +672,17 @@
         if(node.type!=='q') return;
 
         const v = answers[current];
-        if(!v){ alert('Selecione uma opção.'); return; }
+        if(!v){ alert(ui('chooseOption')); return; }
 
         // ===== Fluxo padrão =====
         const opt = node.options.find(o=>o.value===v);
-        if(!opt){ alert('Opção inválida.'); return; }
+        if(!opt){ alert(ui('invalidOption')); return; }
 
         path.push(current);
         current = opt.next;
 
         if (node.banner) {
-            resultEl.innerHTML = '<p class="note">Responda às perguntas para gerar a recomendação.</p>';
+            resultEl.innerHTML = `<p class="note">${ui('pending')}</p>`;
         }
 
         render();
@@ -651,14 +691,14 @@
     function back(){
         if (path.length === 0) return;
         current = path.pop();
-        resultEl.innerHTML = '<p class="note">Responda às perguntas para gerar a recomendação.</p>';
+        resultEl.innerHTML = `<p class="note">${ui('pending')}</p>`;
 
         render();
     }
 
     function resetAll(){
         current = FLOW.start; answers = {}; criteriaAnswers = {}; path = [];
-        resultEl.innerHTML = '<p class="note">Responda às perguntas para gerar a recomendação.</p>';
+        resultEl.innerHTML = `<p class="note">${ui('pending')}</p>`;
         render();
     }
 
@@ -678,8 +718,17 @@
         e.currentTarget.setAttribute('aria-expanded', open);
     });
 
+    document.querySelectorAll('[data-language]').forEach(button => {
+        button.addEventListener('click', () => {
+            if (language === button.dataset.language) return;
+            language = button.dataset.language;
+            SITE_LANGUAGE.set(language);
+            applyLanguage();
+        });
+    });
+
     // init
-    render();
+    applyLanguage();
 </script>
 </body>
 </html>
