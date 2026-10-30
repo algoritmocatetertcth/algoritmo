@@ -13,7 +13,7 @@ window.SITE_TRANSLATIONS = {
             flowLink: 'fluxograma',
             reset: 'Reiniciar', back: '← Anterior', next: 'Próximo →',
             result: 'Resultado', pending: 'Responda às perguntas para gerar a recomendação.',
-            literature: 'Sugestões de Literatura', recommendation: 'Recomendação',
+            literature: 'Sugestões de Literatura', fullLiterature: 'Literatura completa', recommendation: 'Recomendação',
             algorithm: 'Algoritmo', analysis: 'Análise', start: 'Iniciar',
             none: 'Nenhuma das anteriores', basedOnAnswers: 'Este resultado é baseado nas respostas fornecidas.',
             finalBasedOnAnswers: 'A recomendação final foi gerada com base nas respostas fornecidas.',
@@ -30,13 +30,13 @@ window.SITE_TRANSLATIONS = {
             flowPageTitle: 'Algorithm — Flowchart and Criteria Tables',
             heading: 'Algorithm — Clinical Decision-Making for Catheter Removal',
             about: 'About',
-            subtitle: 'Clinical algorithm for the removal of long-term central venous catheters in patients after allogeneic hematopoietic stem cell transplantation.',
-            developed: 'Developed within the Graduate Program in Clinical Medicine (PPGCM/UFRJ).',
+            subtitle: 'Clinical algorithm for guiding the removal of long-term central venous catheters in recipients of allogeneic hematopoietic stem cell transplantation.',
+            developed: 'Developed as part of the Graduate Program in Clinical Medicine (PPGCM/UFRJ).',
             basedOn: 'Version based on the',
             flowLink: 'flowchart',
             reset: 'Restart', back: '← Previous', next: 'Next →',
-            result: 'Result', pending: 'Answer the questions to generate the recommendation.',
-            literature: 'Suggested Literature', recommendation: 'Recommendation',
+            result: 'Result', pending: 'Answer the questions to obtain a recommendation.',
+            literature: 'Suggested Literature', fullLiterature: 'Full Literature', recommendation: 'Recommendation',
             algorithm: 'Algorithm', analysis: 'Analysis', start: 'Start',
             none: 'None of the above', basedOnAnswers: 'This result is based on the answers provided.',
             finalBasedOnAnswers: 'The final recommendation was generated based on the answers provided.',
@@ -48,16 +48,16 @@ window.SITE_TRANSLATIONS = {
         },
         help: {
             flogisticos: { title: '', items: [
-                'Inflammatory signs, after excluding a foreign-body reaction or drug eruption.',
-                'Clinical signs of infection or persistent fever, probably related to the catheter.',
-                'Tremor after catheter manipulation.'
+                'Signs of inflammation, after ruling out a foreign-body reaction or contact dermatitis.',
+                'Clinical signs of infection or persistent fever potentially associated with the catheter.',
+                'Chills or rigors following catheter manipulation.'
             ] },
             '1*': { title: 'The patient/caregiver:', items: [
-                'Attends maintenance and dressing appointments every 7 days.',
-                'Protects the dressing and catheter from dirt.',
-                'Protects the dressing and catheter from getting wet.',
-                'Does not manipulate the catheter or dressing on their own.',
-                'Returns to the appointment with the dressing intact.'
+                'Attends scheduled catheter maintenance and dressing changes every 7 days.',
+                'Keeps the dressing and catheter protected from contamination.',
+                'Keeps the dressing and catheter dry.',
+                'Avoids manipulating the catheter or dressing independently.',
+                'Returns for scheduled appointments with the dressing well-preserved.'
             ] },
             '2*': { title: 'Patients at high risk of post-transplant complications', items: [
                 'Haploidentical.',
@@ -77,7 +77,7 @@ window.SITE_TRANSLATIONS = {
             '3*': { title: 'Acute conditions', items: [
                 'Moderate bleeding.', 'Hemorrhagic cystitis.', 'Hypovolemia.',
                 'Altered level of consciousness.', 'Abnormal vital sign.', 'Organ dysfunction.',
-                'Electrolyte disturbance.', 'Malnourished.', 'Hypoalbuminemia.',
+                'Electrolyte disturbance.', 'Malnutrition.', 'Hypoalbuminemia.',
                 'Marked increase in CMV viral load in two consecutive tests.',
                 'Positive CMV viral load within the past 30 days.',
                 'Ongoing infection <strong>not</strong> related to the catheter.',
@@ -90,20 +90,20 @@ window.SITE_TRANSLATIONS = {
             ] }
         },
         nodes: {
-            inicio: { title: 'Tool applicable at a post-transplant outpatient follow-up visit.' },
-            q_flogisticos: { title: 'Patient with suspected catheter-related infection?' },
-            q_acesso_dificil_infeccao: { title: 'Difficult peripheral venous access or difficulty with a new deep venous puncture?' },
-            q_tratado_14: { title: 'Has the catheter already been treated/observed for <strong>14 days or longer</strong>?' },
-            q_intervalo_7: { title: 'Is the interval between appointments <strong>longer</strong> than 7 days?' },
+            inicio: { title: 'For use during post-transplant outpatient follow-up visits.' },
+            q_flogisticos: { title: 'Is catheter-related infection suspected?' },
+            q_acesso_dificil_infeccao: { title: 'Difficult peripheral venous access or difficulty establishing new central venous access?' },
+            q_tratado_14: { title: 'Has the catheter been monitored or treated for <strong>14 days or longer</strong>?' },
+            q_intervalo_7: { title: 'Is the interval between outpatient visits <strong>longer</strong> than 7 days?' },
             q_adesao: { title: 'Do the patient and caregiver adhere to good catheter maintenance practices?' },
-            q_comp_mecanica: { title: 'Does the catheter have mechanical complications but remain usable?' },
-            q_alto_risco: { title: 'Is the patient at high risk of post-transplant complications?', desc: 'Conditions related to the transplant and HSCT hospitalization.' },
-            q_d100: { title: 'Is the time since transplantation <strong>at least</strong> day +100?' },
-            q_agudas: { title: 'Does the patient have any of the acute conditions?', desc: 'Current conditions in the outpatient setting.' },
+            q_comp_mecanica: { title: 'Is the catheter experiencing mechanical complications but still functioning?' },
+            q_alto_risco: { title: 'Is the patient at high risk of post-transplant complications?', desc: 'Transplant-related and index hospitalization-related conditions.' },
+            q_d100: { title: 'Has the patient reached day +100 post-transplantation?' },
+            q_agudas: { title: 'Does the patient have any of the following conditions?', desc: 'Current clinical conditions in the outpatient setting.' },
             q_reorientar_cuidados: { title: 'Provide care instructions again once.', desc: 'Select one of the options.', options: { prox_vez: 'Next time', prim_vez: 'First time.' } },
             q_agudas_avaliar: { title: 'Assess', desc: 'Select one of the options.', options: {
-                vig_iv: 'Requires clinical monitoring or intravenous treatment',
-                tto_vo: 'Has adequate clinical control and treatment is oral only'
+                vig_iv: 'Requires clinical monitoring or intravenous therapy',
+                tto_vo: 'Clinically stable and oral therapy only'
             } },
             q_dech: { title: 'Does the patient have GVHD?' },
             q_dech_tipo: { options: { aguda: 'Acute GVHD', cronica: 'Chronic GVHD' } },
@@ -111,17 +111,17 @@ window.SITE_TRANSLATIONS = {
             q_estavel_14: { title: 'Stable for <strong>at least</strong> 14 days?' },
             q_dech_cronica_grau: { title: 'Severity of chronic GVHD', options: { leve: 'Mild', mod_grave: 'Moderate or severe' } },
             q_outras_condicoes: { title: 'Does the patient have any other condition?' },
-            q_acesso_dificil: { title: 'Difficult peripheral venous access or difficulty with a new deep venous puncture?' },
-            r_reorientar_uma_vez: { title: 'Is this the first time care instructions are being given again?', banner: { label: 'Provide care instructions again once.' } },
-            r_aguardar_intervalo: { label: 'Reassess at the next appointment / Wait until the interval between appointments exceeds 7 days' },
-            r_aguardar_d100: { label: 'Reassess at the next appointment / Preferably wait until day +100' },
-            r_vigilancia_ou_tto_iv: { label: 'Reassess at the next appointment / Wait for improvement to grade I acute GVHD' },
-            r_aguardar_melhora_clinica: { label: 'Reassess at the next appointment / Wait for clinical or laboratory improvement' },
+            q_acesso_dificil: { title: 'Difficult peripheral venous access or difficulty establishing new central venous access?' },
+            r_reorientar_uma_vez: { title: 'Are catheter care instructions being reinforced for the first time?', banner: { label: 'Provide care instructions again once.' } },
+            r_aguardar_intervalo: { label: 'Reassess at the next outpatient visit / Wait until the interval between outpatient visits exceeds 7 days.' },
+            r_aguardar_d100: { label: 'Reassess at the next outpatient visit / Preferably maintain the catheter until day +100 post-transplantation.' },
+            r_vigilancia_ou_tto_iv: { label: 'Reassess at the next outpatient visit / Wait until acute GVHD improves to grade I' },
+            r_aguardar_melhora_clinica: { label: 'Reassess at the next outpatient visit / Wait until clinical or laboratory parameters improve' },
             r_reavaliar_melhora: { label: 'Reassess at the next appointment / Wait for improvement in the condition' },
             r_aguardar_trat_infeccioso: { label: 'Reassess at the next appointment / Wait until treatment for infection is completed' },
-            r_reavaliar_14_dias: { label: 'Reassess at the next appointment / Wait until GVHD has been stable for at least 14 days' },
+            r_reavaliar_14_dias: { label: 'Reassess at the next outpatient visit / Wait until GVHD has remained stable for at least 14 days' },
             r_reavaliar_dechc_leve: { label: 'Reassess / Wait for mild chronic GVHD' },
-            r_reavaliar_para_dechc_leve: { label: 'Reassess at the next appointment / Wait for improvement to mild chronic GVHD' },
+            r_reavaliar_para_dechc_leve: { label: 'Reassess at the next outpatient visit / Wait until chronic GVHD improves to a mild severity grade' },
             r_manter: { label: 'Keep the catheter for the proposed treatment' },
             r_retirar: { label: 'Remove the catheter' },
             r_retirar_pos_reorientacao: { label: 'Remove the catheter', details: 'Did not adhere to good practices.' }
@@ -129,18 +129,18 @@ window.SITE_TRANSLATIONS = {
         commonOptions: { sim: 'Yes', nao: 'No' },
         flowCriteria: [
             { title: 'Suspected catheter-related infection', items: [
-                'Inflammatory signs, after excluding a foreign-body reaction or drug eruption',
-                'Clinical signs of infection or persistent fever, probably related to the catheter',
-                'Tremor after catheter manipulation'
+                'Signs of inflammation, after ruling out a foreign-body reaction or contact dermatitis',
+                'Clinical signs of infection or persistent fever potentially associated with the catheter',
+                'Chills or rigors following catheter manipulation'
             ] },
             { title: 'Adherence to good catheter maintenance practices', items: [
-                'Attends maintenance and dressing appointments every 7 days',
-                'Protects the dressing and catheter from dirt',
-                'Protects the dressing and catheter from getting wet',
-                'Does not manipulate the catheter or dressing on their own',
-                'Returns to the appointment with the dressing intact'
+                'Attends scheduled catheter maintenance and dressing changes every 7 days',
+                'Keeps the dressing and catheter protected from contamination',
+                'Keeps the dressing and catheter dry',
+                'Avoids manipulating the catheter or dressing independently',
+                'Returns for scheduled appointments with the dressing well-preserved'
             ] },
-            { title: 'Patients at high risk of post-transplant complications', subtitle: '(conditions related to the transplant and HSCT hospitalization)', items: [
+            { title: 'Patients at high risk of post-transplant complications', subtitle: '(transplant-related and index hospitalization-related conditions)', items: [
                 'Haploidentical', 'HSCT with active disease', 'Disease at high risk of relapse',
                 'High comorbidity index (HCT-CI)', 'Frail', 'Prolonged hospitalization during HSCT',
                 'ICU admission during HSCT', 'Hepatic sinusoidal obstruction syndrome (SOS/VOD) during HSCT',
@@ -148,9 +148,9 @@ window.SITE_TRANSLATIONS = {
                 'Acute GVHD during the transplant hospitalization', 'Required emergency care after discharge',
                 'Proposed donor lymphocyte infusion (DLI)'
             ] },
-            { title: 'Acute conditions', subtitle: '(current conditions in the outpatient setting)', items: [
+            { title: 'Acute conditions', subtitle: '(current clinical conditions in the outpatient setting)', items: [
                 'Moderate bleeding', 'Hemorrhagic cystitis', 'Hypovolemia', 'Altered level of consciousness',
-                'Abnormal vital sign', 'Organ dysfunction', 'Electrolyte disturbance', 'Malnourished',
+                'Abnormal vital sign', 'Organ dysfunction', 'Electrolyte disturbance', 'Malnutrition',
                 'Hypoalbuminemia', 'Marked increase in CMV viral load in two consecutive tests',
                 'Positive CMV viral load within the past 30 days',
                 'Ongoing infection <strong>not</strong> related to the catheter',

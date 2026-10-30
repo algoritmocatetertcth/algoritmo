@@ -63,6 +63,9 @@
         .lit-ref{display:block;color:var(--brand);text-decoration:none;font-size:14px;line-height:1.45;padding:10px 0;border-bottom:1px solid var(--line)}
         .lit-ref:last-child{border-bottom:0}
         .lit-ref:hover{text-decoration:underline}
+        .full-lit-link{display:inline-flex;align-items:center;gap:9px;margin-top:16px;text-decoration:none;color:#fff;background:var(--brand);box-shadow:0 6px 16px rgba(13,110,253,.18);transition:transform .2s ease,box-shadow .2s ease,background .2s ease}
+        .full-lit-link:hover{background:#0b5ed7;transform:translateY(-2px);box-shadow:0 9px 22px rgba(13,110,253,.25)}
+        .full-lit-link:focus-visible{outline:3px solid #084298;outline-offset:3px}
         .q-criteria{color:var(--muted);margin-bottom:8px}
         .q-criteria ul{margin:6px 0 0 18px}
         .head-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
@@ -82,6 +85,7 @@
             .header .subtitle{display:none;margin-top:8px}
             .header.about-open .subtitle{display:block}
         }
+        @media(prefers-reduced-motion:reduce){.full-lit-link{transition:none!important}}
     </style>
 </head>
 <body>
@@ -132,7 +136,7 @@
             title: "",
 
             items: [
-                "Sinais flogísticos, após exclusão de reação a corpo estranho ou farmacodermia.",
+                "Sinais flogísticos, após exclusão de reação a corpo estranho ou dermatite de contato.",
                 "Sinais clínicos de infecção ou febre persistente, com provável relação com o cateter.",
                 "Tremor após manipulação do cateter."
             ]
@@ -440,12 +444,10 @@
     }
 
     function renderLiterature(nodeId){
-        // O mesmo resultado "retirar" é alcançado por caminhos clínicos diferentes.
-        // Para retirada sem suspeita de infecção, reutiliza o grupo 3 do documento.
-        const literatureId = nodeId === 'r_retirar'
-            ? (answers.q_flogisticos === 'sim' ? 'r_retirar_infeccao' : 'r_retirar_pos_reorientacao')
-            : nodeId;
-        const refs = LITERATURE[literatureId];
+        if (nodeId === 'r_retirar' || nodeId === 'r_retirar_pos_reorientacao') {
+            return `<a class="btn full-lit-link" href="literatura.html" id="fullLiteratureLink">${BOOK_ICON}<span>${ui('fullLiterature')}</span><span aria-hidden="true">↗</span></a>`;
+        }
+        const refs = LITERATURE[nodeId];
         if(!refs || !refs.length) return '';
         const body = refs.map(r => r.url
             ? `<a class="lit-ref" href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(r.text)}</a>`
@@ -641,8 +643,17 @@
   </div>
   <div class="note">${ui('finalBasedOnAnswers')}</div>
   ${renderLiterature(current)}`;
+        const fullLiteratureLink = document.getElementById('fullLiteratureLink');
+        if (fullLiteratureLink) fullLiteratureLink.addEventListener('click', openFullLiterature);
         btnNext.style.display='none';
         btnBack.disabled = path.length===0;
+    }
+
+    function openFullLiterature(event){
+        if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        try {
+            sessionStorage.setItem('algoritmo-return-state', JSON.stringify({ current, answers, criteriaAnswers, path }));
+        } catch (_) { /* A navegação continua se o armazenamento não estiver disponível. */ }
     }
 
     function renderStart(node){
@@ -725,6 +736,26 @@
             SITE_LANGUAGE.set(language);
             applyLanguage();
         });
+    });
+
+    // Restaura o desfecho ao voltar da página de literatura.
+    try {
+        const saved = sessionStorage.getItem('algoritmo-return-state');
+        if (saved) {
+            sessionStorage.removeItem('algoritmo-return-state');
+            const state = JSON.parse(saved);
+            if (FLOW.nodes[state.current]) {
+                current = state.current;
+                answers = state.answers || {};
+                criteriaAnswers = state.criteriaAnswers || {};
+                path = Array.isArray(state.path) ? state.path : [];
+            }
+        }
+    } catch (_) { /* Usa o início do algoritmo se o estado não puder ser restaurado. */ }
+    window.addEventListener('pageshow', event => {
+        if (event.persisted) {
+            try { sessionStorage.removeItem('algoritmo-return-state'); } catch (_) { /* Ignora armazenamento indisponível. */ }
+        }
     });
 
     // init
