@@ -444,10 +444,12 @@
     }
 
     function renderLiterature(nodeId){
-        if (nodeId === 'r_retirar' || nodeId === 'r_retirar_pos_reorientacao') {
+        // O desfecho final de retirada é alcançado pelo caminho sem suspeita de infecção.
+        if (nodeId === 'r_retirar' && answers.q_flogisticos === 'nao') {
             return `<a class="btn full-lit-link" href="literatura.html" id="fullLiteratureLink">${BOOK_ICON}<span>${ui('fullLiterature')}</span><span aria-hidden="true">↗</span></a>`;
         }
-        const refs = LITERATURE[nodeId];
+        const literatureId = nodeId === 'r_retirar' ? 'r_retirar_infeccao' : nodeId;
+        const refs = LITERATURE[literatureId];
         if(!refs || !refs.length) return '';
         const body = refs.map(r => r.url
             ? `<a class="lit-ref" href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(r.text)}</a>`
